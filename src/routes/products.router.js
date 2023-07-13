@@ -5,16 +5,15 @@ const router = Router();
 const productsManager = new productManager();
 
 router.get("/", async (req, res) => {
-    const { limit } = req.query;
-    let products;
-    if (limit){
-        console.log(limit)
-        products = await productsManager.getProducts(limit);
-    } else {
-        products = await productsManager.getProducts(10);
-    }
-
-    res.status(200).json({ status: "ok", data: products});
+        let { limit, page, sort, query, statusQuery} = req.query;
+        if (sort == "asc"){
+            sort = 1;
+        } else if(sort == "desc"){
+            sort = -1
+        }
+        const request = await productsManager.getProducts( limit, query, sort, statusQuery)
+        res.status(200).json({ status: "ok", data: request});
+    
 })
 
 router.get("/:Pid", async (req, res) =>{
@@ -25,8 +24,8 @@ router.get("/:Pid", async (req, res) =>{
 })
 
 router.post("/", async (req, res) => {
-    const {title, description, thumbnails, price, stock, code, status} = req.body
-    if (!title || !description || !thumbnails || !price || !stock || !code || !status){
+    const {title, description, thumbnails, price, stock, code, status, brand} = req.body
+    if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
         return res.status(400).json({ status: "error", message: "no data sent!" })
     }
     const product = req.body;
@@ -35,8 +34,8 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:Pid", async (req, res) => {
-    const {title, description, thumbnails, price, stock, code, status} = req.body
-    if (!title || !description || !thumbnails || !price || !stock || !code || !status){
+    const {title, description, thumbnails, price, stock, code, status, brand} = req.body
+    if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
         return res.status(400).json({ status: "error", message: "no data sent!" })
     } 
     const { Pid } = req.params;
