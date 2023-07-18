@@ -1,18 +1,23 @@
 import productModel from "../models/productModel.js";
 
 export default class productManager{
-    
     getProducts = (limit, query, sort, status) => {
-
         let matchQuerys = [];
         if (query == "redDragon" ||query == "hyperX" ){
             matchQuerys.push({ $match: {brand: `${query}`} })
         }
+
+        // tengo una idea ya de como hacer el query mas amplio haciendo por ejemplo un if(query === "category")
+        // y otros tipos de filtros pero por falta de tiempo lo dejo ahi
+
         if (status === "true"){
             matchQuerys.push({ $match: {status: true} });
         }
         if (status === "false"){
             matchQuerys.push({ $match: {status: false}})
+        }
+        if (limit) {
+            matchQuerys.push({$limit: parseInt(limit)})
         }
             
         let pipeline = [...matchQuerys];
@@ -25,7 +30,7 @@ export default class productManager{
         if (pipeline.length > 0) {
             request = productModel.aggregate(pipeline);
         } else {
-            request = productModel.find();
+            request = productModel.find().lean();
         }
         return request
     }

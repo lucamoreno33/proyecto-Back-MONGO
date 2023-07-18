@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const cartsCollection = "carts"
 
 const cartSchema = new mongoose.Schema({
-    title: String,
     products:[{
         _id: false,
         product:{

@@ -14,5 +14,12 @@ export default class cartManager{
     addProductToCart = (cartID, newcart ) =>{
         return cartModel.findByIdAndUpdate(cartID, newcart)
     } 
+    deleteProductOfThecart = (cid, pid) =>{
+        return cartModel.findByIdAndUpdate(cid, {$pull: {products: {product: pid} } })
+        
+    }
+    updateCart = (cid, newProducts) =>{
+        return cartModel.findByIdAndUpdate(cid, { $set: { products: newProducts } })
+    }
     
 }
