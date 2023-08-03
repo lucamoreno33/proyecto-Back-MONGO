@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import initializePassport from './config/passport.config.js';
 
 import viewsRouter from "./routes/views.router.js"
 import productsRouter from "./routes/products.router.js"
@@ -29,6 +31,11 @@ app.use(
     })
 );
 
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 const httpServer = app.listen(3000, () => console.log("server is listening on port 3000"));
 const io = new Server(httpServer)
 
@@ -42,10 +49,6 @@ io.on("connection", async (socket) =>{
         io.emit("messageLogs", messages)
     })
 })
-
-
-
-
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`)

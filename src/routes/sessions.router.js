@@ -1,23 +1,26 @@
 import { Router } from "express";
-import { userModel } from "../dao/mongo/models/userModel.js";
+import passport from "passport";
 
 const router = Router();
 
 
-router.post('/register',async(req,res)=>{
-    const result = await userModel.create(req.body);
-    res.send({status:"success",payload:result});
+router.post('/register', passport.authenticate("register"), async(req,res)=>{
+    res.send({status:"success", message: "bienvenido, usuario creado"});
 })
-router.post("/login", async (req, res) =>{
-    
-    const {email, password} = req.body;
-    const user = await userModel.findOne({email, password});
-    if (!user) return res.status(404).json("email y/o contraseña equivocadas")
-    req.session.user = {
-        name: `${user.first_name} ${user.last_name}`,
-        email: user.email
+
+router.post("/login", passport.authenticate("login"), async (req, res) =>{
+    if (!req.user) 
+        return res.status(400).send({ status:"error", error: "contraseña y/o email incorrecto" });
+    req.session.user = req.user
+    res.send({ status: "success", payload: req.user });
+})
+
+router.get("/github", passport.authenticate("github"), async (req, res) => {});
+
+router.get("/githubcallback", passport.authenticate("github"), async (req, res) => {
+    req.session.user = req.user;
+    res.redirect("/profile");
     }
-    res.status(200).json({status: "ok"})
-})
+)
 
 export default router
