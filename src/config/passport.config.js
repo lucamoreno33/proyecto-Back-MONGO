@@ -7,11 +7,13 @@ import { createHash, isValidPassword } from "../utils.js"
 const localStrategy = local.Strategy;
 
 const initializePassport = () =>{
+
     passport.use("register", new localStrategy({
         usernameField: "email",
         passReqToCallback: true
     }, async (req, username, password, done) => {
         const { first_name, last_name, email } = req.body;
+        let role = "user"        
         try {
             const user = await userModel.findOne({ email: username })
             if(user){
@@ -21,8 +23,12 @@ const initializePassport = () =>{
                 first_name,
                 last_name,
                 email,
-                password: createHash(password)
+                password: createHash(password),
+                role,
             };
+            if (newUser.email === "luca@mail.com"){
+                newUser.role = "ADMIN" 
+            }
             const result = await userModel.create(newUser);
             return done(null, result);
         } catch (error) {
@@ -47,8 +53,7 @@ const initializePassport = () =>{
         }    
     ));
 
-    passport.use(
-        "github",
+    passport.use("github",
         new GitHubStrategy({
             clientID: "Iv1.94b2518d846524f8",
             clientSecret: "4551f2424f96fda4eab91fa4cbacdaa69350a615",
@@ -59,11 +64,13 @@ const initializePassport = () =>{
                 const user = await userModel.findOne({ email: profile._json.email });
                 
                 if (!user) {
+                    let role = "user"
                     const newUser = {
                         first_name: profile._json.name.split(" ")[0],
                         last_name: profile._json.name.split(" ")[1],
                         email: profile._json.email,
                         password: "",
+                        role,
                     };
                     const result = await userModel.create(newUser);
                     return done(null, result);

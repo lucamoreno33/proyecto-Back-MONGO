@@ -1,29 +1,30 @@
 import { Router } from "express";
 import cartManager from "../dao/mongo/manager/cartManager.js";
 import productManager from "../dao/mongo/manager/productManager.js"
+import authorization from "../middlewares/authorization.middlewares.js";
 
 
 const router = Router();
 const cartsManager = new cartManager();
 const productsManager = new productManager();
 
-router.get("/", async (req, res) => {
+router.get("/",authorization("ADMIN"), async (req, res) => {
     const carts = await cartsManager.getCarts()
     res.status(200).json({ status: "ok", data: carts })
 })
 
-router.get("/:cid", async (req, res) => {
+router.get("/:cid", authorization("user"), async (req, res) => {
     const { cid } = req.params;
     let cart = await cartsManager.getCart(cid).populate("products.product")
     res.status(200).json({ status: "ok", data: cart })
 })
 
-router.post("/", async (req, res) => {
+router.post("/", authorization("user"), async (req, res) => {
     const createdCart = await cartsManager.addCart()
     res.status(201).json({ status: "ok", data: createdCart })
 })
 
-router.post("/:cid/products/:pid", async (req, res) => {
+router.post("/:cid/products/:pid",authorization("user"), async (req, res) => {
     const {cid, pid} = req.params
     let cart = await cartsManager.getCart(cid)
     cart.products.push({ product: pid })
@@ -31,7 +32,7 @@ router.post("/:cid/products/:pid", async (req, res) => {
     res.json("producto agregado exitosamente")
 })
 
-router.delete("/:cid", async (req, res) =>{
+router.delete("/:cid", authorization("user"),async (req, res) =>{
     const {cid} = req.params;
     const result = await cartsManager.updateCart(cid, [])
     if (result){

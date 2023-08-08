@@ -1,10 +1,12 @@
 import { Router } from "express";
 import productManager from "../dao/mongo/manager/productManager.js";
+import authorization from "../middlewares/authorization.middlewares.js";
+
 
 const router = Router();
 const productsManager = new productManager();
 
-router.get("/", async (req, res) => {
+router.get("/" ,authorization("user"), async (req, res) => {
         let { limit, page, sort, query, statusQuery} = req.query;
         if (sort == "asc"){
             sort = 1;
@@ -16,14 +18,14 @@ router.get("/", async (req, res) => {
     
 })
 
-router.get("/:Pid", async (req, res) =>{
+router.get("/:Pid", authorization("ADMIN"), async (req, res) =>{
     const { Pid } = req.params;
     const product = await productsManager.getProduct(Pid);
     if (product) return res.status(200).json(product)
     res.status(404).json({error: "id no encontrado"})
 })
 
-router.post("/", async (req, res) => {
+router.post("/", authorization("ADMIN"), async (req, res) => {
     const {title, description, thumbnails, price, stock, code, status, brand} = req.body
     if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
         return res.status(400).json({ status: "error", message: "no data sent!" })
@@ -33,7 +35,7 @@ router.post("/", async (req, res) => {
     res.status(201).json({ status: "Ok", data: createdProduct})
 })
 
-router.put("/:Pid", async (req, res) => {
+router.put("/:Pid", authorization("ADMIN"), async (req, res) => {
     const {title, description, thumbnails, price, stock, code, status, brand} = req.body
     if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
         return res.status(400).json({ status: "error", message: "no data sent!" })
@@ -44,7 +46,7 @@ router.put("/:Pid", async (req, res) => {
     res.json({ status: "ok", data: newProduct})
 })
 
-router.delete("/:Pid", async (req, res) =>{
+router.delete("/:Pid", authorization("ADMIN"), async (req, res) =>{
     const { Pid } = req.params;
     await productsManager.deleteProduct(Pid);
     res.sendStatus(204);

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import productModel from '../dao/mongo/models/productModel.js'
 import productManager from "../dao/mongo/manager/productManager.js";
+import authorization from "../middlewares/authorization.middlewares.js";
 
 const router = Router();
 const productsManager = new productManager();
@@ -26,11 +27,7 @@ router.get("/register", (req, res) => {
 router.get("/login", (req, res) => {
     res.render("login");
 })
-router.get('/profile',(req,res)=>{
-    res.render('profile',{
-        user:req.session.user
-    })
-})
+
 
 
 export default router;
