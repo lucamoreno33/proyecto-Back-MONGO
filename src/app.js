@@ -6,7 +6,7 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
-
+import config from './config/config.js';
 import viewsRouter from "./routes/views.router.js"
 import productsRouter from "./routes/products.router.js"
 import cartsRouter from "./routes/carts.router.js"
@@ -17,15 +17,17 @@ const messagesManager = new chatManager();
 import __dirname from './utils.js';
 
 
+const PORT = config.PORT
+
 const app = express();
-const connection = await mongoose.connect("mongodb+srv://lucaNM33:lucanmoreno33@cluster0.vwjiqe6.mongodb.net/?retryWrites=true&w=majority")
+const connection = await mongoose.connect(config.MONGO_URL)
 app.use(
     session({
         store:MongoStore.create({
-            mongoUrl: "mongodb+srv://lucaNM33:lucanmoreno33@cluster0.vwjiqe6.mongodb.net/?retryWrites=true&w=majority",
+            mongoUrl: config.MONGO_URL,
             ttl: 150
         }),
-        secret: "coder secret",
+        secret: config.SECRET,
         resave: false,
         saveUnitialized: false,
     })
@@ -36,7 +38,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-const httpServer = app.listen(3000, () => console.log("server is listening on port 3000"));
+const httpServer = app.listen(PORT, () => console.log(`server is listening on port ${PORT}`));
 const io = new Server(httpServer)
 
 
