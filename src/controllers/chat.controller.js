@@ -1,6 +1,6 @@
-import chatModel from "../models/chatModel.js";
+import chatModel from "../dao/mongo/models/chatModel"
 
-export default class chatManager{
+export default class chatController{
     getMessages = () => chatModel.find()
     
     addMessage = (message) => chatModel.create(message)

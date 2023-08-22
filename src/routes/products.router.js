@@ -1,10 +1,10 @@
 import { Router } from "express";
-import productManager from "../dao/mongo/manager/productManager.js";
+import productController from "../controllers/product.controller.js";
 import authorization from "../middlewares/authorization.middlewares.js";
 
 
 const router = Router();
-const productsManager = new productManager();
+const productsManager = new productController();
 
 router.get("/" ,authorization("user"), async (req, res) => {
         let { limit, page, sort, query, statusQuery} = req.query;

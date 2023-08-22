@@ -1,12 +1,11 @@
 import { Router } from "express";
-import cartManager from "../dao/mongo/manager/cartManager.js";
-import productManager from "../dao/mongo/manager/productManager.js"
+import cartController from "../controllers/cart.controller.js";
 import authorization from "../middlewares/authorization.middlewares.js";
 
 
 const router = Router();
-const cartsManager = new cartManager();
-const productsManager = new productManager();
+const cartsManager = new cartController();
+
 
 router.get("/",authorization("ADMIN"), async (req, res) => {
     const carts = await cartsManager.getCarts()

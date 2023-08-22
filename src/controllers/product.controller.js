@@ -1,14 +1,11 @@
-import productModel from "../models/productModel.js";
+import productModel from "../dao/mongo/models/productModel.js";
 
-export default class productManager{
+export default class productController{
     getProducts = (limit, query, sort, status) => {
         let matchQuerys = [];
         if (query == "redDragon" ||query == "hyperX" ){
             matchQuerys.push({ $match: {brand: `${query}`} })
         }
-
-        // tengo una idea ya de como hacer el query mas amplio haciendo por ejemplo un if(query === "category")
-        // y otros tipos de filtros pero por falta de tiempo lo dejo ahi
 
         if (status === "true"){
             matchQuerys.push({ $match: {status: true} });

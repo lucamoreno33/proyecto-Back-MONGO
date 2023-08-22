@@ -1,12 +1,11 @@
 import { Router } from "express";
 import productModel from '../dao/mongo/models/productModel.js'
-import productManager from "../dao/mongo/manager/productManager.js";
 import authorization from "../middlewares/authorization.middlewares.js";
 
 const router = Router();
-const productsManager = new productManager();
 
-router.get("/", async (req, res) => {
+
+router.get("/",authorization("user"), async (req, res) => {
     const { limit, page = 1, sort, query, statusQuery} = req.query;
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest} =
         await productModel.paginate({}, {page, limit: 2, lean: true});

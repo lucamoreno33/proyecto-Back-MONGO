@@ -1,6 +1,6 @@
-import cartModel from "../models/cartModel.js";
+import cartModel from "../dao/mongo/models/cartModel.js"
 
-export default class cartManager{
+export default class cartController{
     getCarts = () => {
         return cartModel.find()
     }
