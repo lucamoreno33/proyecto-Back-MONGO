@@ -1,46 +1,67 @@
-import productModel from "../dao/mongo/models/productModel.js";
+import productManager from "../dao/mongo/manager/productManager.js";
 
-export default class productController{
-    getProducts = (limit, query, sort, status) => {
-        let matchQuerys = [];
-        if (query == "redDragon" ||query == "hyperX" ){
-            matchQuerys.push({ $match: {brand: `${query}`} })
-        }
+const productController = new productManager();
 
-        if (status === "true"){
-            matchQuerys.push({ $match: {status: true} });
+const getProduct = async(req, res) =>{
+        const { Pid } = req.params;
+        const result = await productController.getProduct(Pid)
+        if (result) return res.status(200).json({status: "ok", data: result});
+        return res.status(404).json({ message: "product not found"})
+    }
+
+const getProducts = async(req, res) => {
+        let { limit, page, sort, query, statusQuery} = req.query;
+        if (sort == "asc"){
+            sort = 1;
+        } else if(sort == "desc"){
+            sort = -1
         }
-        if (status === "false"){
-            matchQuerys.push({ $match: {status: false}})
-        }
-        if (limit) {
-            matchQuerys.push({$limit: parseInt(limit)})
-        }
-            
-        let pipeline = [...matchQuerys];
-        if (sort === 1 || sort === -1) {
-            const sortQuery = { price: sort };
-            pipeline.push({$sort: sortQuery});
-        }
+        const request = await productController.getProducts(limit, query, sort, statusQuery)
+        if (request) return res.status(200).json({ status: "ok", data: request});
         
-        let request;
-        if (pipeline.length > 0) {
-            request = productModel.aggregate(pipeline);
-        } else {
-            request = productModel.find().lean();
+        return res.status(400).json({status: "error", message: "bad request"})
+    }
+
+
+const addProduct = async(req, res) =>{
+        const {title, description, thumbnails, price, stock, code, status, brand} = req.body
+        if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
+            return res.status(400).json({ status: "error", message: "no data sent!" })
         }
-        return request
-    }
-    getProduct = (id) =>{
-        return productModel.findById(id)
+        const product = req.body;
+        const createdProduct = await productController.addProduct(product)
+        if (createdProduct) return res.status(201).json({ status: "Ok", data: createdProduct})
+
+        return res.status(400).json({status: "error", message: "bad request" })
     } 
-    addProduct = (product) => {
-        return productModel.create(product)
+
+
+const updateProduct = async(req, res) =>{
+        const {title, description, thumbnails, price, stock, code, status, brand} = req.body
+        if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
+            return res.status(400).json({ status: "error", message: "no data sent!" })
+        } 
+        const { Pid } = req.params;
+        const newProduct = req.body;
+        const result = await productController.updateProduct(Pid, newProduct);
+        if (result) return res.json({ status: "ok", data: newProduct})
+
+        return res.status(400).json({ status: "error", message: "bad request" })
     }
-    updateProduct = (id, product) =>{
-        return productModel.findByIdAndUpdate(id, product)
+
+
+const deleteProduct = async(req, res) =>{
+        const { Pid } = req.params;
+        const result = await productController.deleteProduct(Pid);
+        if (result) return res.sendStatus(204);
+        
+        return res.status(400).json({status: "error", message: "bad request"})
     }
-    deleteProduct = (id) => {
-        return productModel.findByIdAndDelete(id)
-    }
+
+export default{
+    getProduct,
+    getProducts,
+    addProduct,
+    updateProduct,
+    deleteProduct
 }

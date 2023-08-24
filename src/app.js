@@ -7,11 +7,9 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 import config from './config/config.js';
-import viewsRouter from "./routes/views.router.js"
-import productsRouter from "./routes/products.router.js"
-import cartsRouter from "./routes/carts.router.js"
-import chatRouter from "./routes/chat.router.js"
-import sessionsRouter from "./routes/sessions.router.js"
+
+import router from './routes/index.js';
+
 import chatManager from './dao/mongo/manager/chatManager.js';
 const messagesManager = new chatManager();
 import __dirname from './utils.js';
@@ -59,9 +57,5 @@ app.set("view engine", "handlebars");
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
-app.use("/", viewsRouter);
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
-app.use("/chat", chatRouter);
-app.use("/api/sessions", sessionsRouter)
 
+app.use("/", router);
