@@ -1,4 +1,5 @@
 import productModel from "../dao/mongo/models/productModel.js";
+import UserDTO from "../dao/DTOs/User.dto.js";
 
 const home = async(req, res) =>{
     const { limit, page = 1, sort, query, statusQuery} = req.query;
@@ -14,10 +15,9 @@ const home = async(req, res) =>{
             nextPage
         })
 }
-const currentRender = (req, res) =>{
-    res.render('profile',{
-        user:req.session.user
-    })
+const current = (req, res) =>{
+    const userDTO = new UserDTO(req.session.user);
+        res.json({ status: 'success', user: userDTO });
 }
 
 const loginRender = (req, res) =>{
@@ -30,7 +30,7 @@ const registerRender = (req, res) =>{
 
 export default{
     home,
-    currentRender,
+    current,
     loginRender,
     registerRender
 }

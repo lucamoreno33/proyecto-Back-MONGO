@@ -4,19 +4,20 @@ import cartController from "../controllers/cart.controller.js";
 
 const router = Router();
 
-router.get("/", cartController.getCarts)
+router.get("/", authorization("ADMIN"),cartController.getCarts)
 
-router.get("/:cid", cartController.getCart)
+router.get("/:cid", authorization("user"), cartController.getCart)
 
-router.post("/", cartController.addCart)
+router.post("/", authorization("ADMIN"), cartController.addCart)
 
-router.post("/:cid/products/:pid", cartController.addProductToCart)
+router.post("/:cid/products/:pid", authorization("user"), cartController.addProductToCart)
 
-router.delete("/:cid", cartController.emptyCart)
+router.delete("/:cid", authorization("user"), cartController.emptyCart)
 
-router.delete("/:cid/products/:pid", cartController.deleteProductOfThecart)
+router.delete("/:cid/products/:pid", authorization("user"), cartController.deleteProductOfThecart)
 
-router.put("/:cid", cartController.updateCart)
+router.put("/:cid", authorization("user"), cartController.updateCart)
 
+router.get("/:cid/purchase", authorization("user"), cartController.purchaseCart)
 
 export default router

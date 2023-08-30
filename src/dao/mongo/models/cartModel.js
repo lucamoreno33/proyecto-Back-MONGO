@@ -11,7 +11,7 @@ const cartSchema = new mongoose.Schema({
         },
         quantity:{
             type: Number,
-            required:[true, "la cantidad del producto es obligatoria"],
+            required:true
         }
     }]
 })

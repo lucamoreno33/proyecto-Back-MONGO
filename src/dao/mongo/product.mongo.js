@@ -1,4 +1,4 @@
-import productModel from "../models/productModel.js";
+import productModel from "./models/productModel.js";
 export default class productManager{
     getProducts = (limit, query, sort, status) => {
         let matchQuerys = [];
@@ -37,6 +37,11 @@ export default class productManager{
         return productModel.create(product)
     }
     updateProduct = (id, product) =>{
+        return productModel.findByIdAndUpdate(id, product)
+    }
+    restProductStock = (id, number) =>{
+        const product = productModel.findById(id)
+        product.stock -= number
         return productModel.findByIdAndUpdate(id, product)
     }
     deleteProduct = (id) => {

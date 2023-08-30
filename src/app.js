@@ -10,7 +10,7 @@ import config from './config/config.js';
 
 import router from './routes/index.js';
 
-import chatManager from './dao/mongo/manager/chatManager.js';
+import chatManager from './dao/mongo/chat.mongo.js';
 const messagesManager = new chatManager();
 import __dirname from './utils.js';
 

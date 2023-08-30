@@ -1,12 +1,18 @@
-import cartManager from "../dao/mongo/manager/cartManager.js"
+import cartManager from "../dao/mongo/cart.mongo.js"
+import ticketModel from "../dao/mongo/models/ticketModel.js";
+import productManager from "../dao/mongo/product.mongo.js";
+import { uid } from "uid";
 
 const cartController = new cartManager();
+const productController = new productManager();
+
 
 const getCart = async(req, res) =>{
     const { cid } = req.params;
     if (!cid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
-    const cart = await cartController.getCart(cid).populate("products.product")
+    const cart = await cartController.getCart(cid).populate("products.product") 
+    
     if (cart) return res.status(200).json({ status: "ok", data: cart })
     
     res.status(404).json({ status: "error", message: "cart not found"})
@@ -14,6 +20,7 @@ const getCart = async(req, res) =>{
 
 const getCarts = async(req, res) =>{
     const carts = await cartController.getCarts()
+    
     if (carts) return res.status(200).json({ status: "ok", data: carts })
 
     res.status(404).json({ status: "error", message: "data not found"})
@@ -41,8 +48,16 @@ const addProductToCart = async(req, res) =>{
     if (!cid || !pid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
     let cart = await cartController.getCart(cid)
+    console.log(cart.products[0])
+    
     if (cart){
-        cart.products.push({ product: pid })
+        const existingProductIndex = cart.products.findIndex(item => item.product.equals(pid));
+        if (existingProductIndex !== -1) {
+            cart.products[existingProductIndex].quantity += 1;
+            await cartController.addProductToCart(cid, cart)
+            return res.json("producto agregado exitosamente")
+        }
+        cart.products.push({ product:pid, quantity: 1 })
         const result = await cartController.addProductToCart(cid, cart)
         if (result) return res.json("producto agregado exitosamente")
 
@@ -71,6 +86,37 @@ const updateCart = async(req, res) =>{
     res.status(404).json({ status: "error", message: "cart not found"})
 }
 
+const purchaseCart = async(req, res) =>{
+    const {cid} = req.params
+    const noStockProducts = []
+    const cart = await cartController.getCart(cid).populate("products.product")
+    let total = 0;
+    for (const product of cart.products) {
+        const dbProduct = await productController.getProduct(product.product.id);
+        if (dbProduct.stock >= product.quantity) {
+            total += product.product.price * product.quantity;
+            
+            dbProduct.stock -= product.quantity;
+            product.product.stock -= product.quantity;
+            await cartController.deleteProductOfThecart(cid, dbProduct.id)
+
+            if (dbProduct.stock === 0) {
+                await productController.deleteProduct(dbProduct.id);
+            } else {
+                await productController.updateProduct(dbProduct.id, dbProduct);
+            }
+        }else noStockProducts.push(product.product.id)
+    }
+    const email = req.session.user.email
+    const ticket = await ticketModel.create({
+        code: uid(),
+        purchase_datetime: new Date,
+        amount: total,
+        purchaser: email
+    })
+    res.status(200).json({ status: "ok", data: {ticket, noStockProducts} })
+}
+
 export default{
     getCart,
     getCarts,
@@ -78,5 +124,6 @@ export default{
     emptyCart,
     addProductToCart,
     deleteProductOfThecart,
-    updateCart
+    updateCart,
+    purchaseCart
 }

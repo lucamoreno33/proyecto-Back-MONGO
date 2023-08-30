@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/",authorization("user"), viewsController.home)
 
-router.get("/current", authorization("user"), viewsController.currentRender)
+router.get("/current", authorization("user"), viewsController.current)
 
 router.get("/register", viewsController.registerRender)
 

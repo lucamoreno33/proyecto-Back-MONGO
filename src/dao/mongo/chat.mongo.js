@@ -1,4 +1,4 @@
-import chatModel from "../models/chatModel.js";
+import chatModel from "./models/chatModel.js";
 
 export default class chatManager{
     getMessages = () => chatModel.find()
