@@ -10,9 +10,11 @@ import config from './config/config.js';
 
 import router from './routes/index.js';
 
+import errorHandler from './middlewares/errorHandler.js';
+
 import chatManager from './dao/mongo/chat.mongo.js';
 const messagesManager = new chatManager();
-import __dirname from './utils.js';
+import __dirname from "./utils.js"
 
 
 const PORT = config.PORT
@@ -34,7 +36,7 @@ app.use(
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(errorHandler);
 
 const httpServer = app.listen(PORT, () => console.log(`server is listening on port ${PORT}`));
 const io = new Server(httpServer)

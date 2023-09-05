@@ -2,6 +2,8 @@ import cartManager from "../dao/mongo/cart.mongo.js"
 import ticketModel from "../dao/mongo/models/ticketModel.js";
 import productManager from "../dao/mongo/product.mongo.js";
 import { uid } from "uid";
+import CustomErrors from "../utils/errors/Custom.errors.js";
+import EnumErrors from "../utils/errors/Enum.errors.js";
 
 const cartController = new cartManager();
 const productController = new productManager();
@@ -22,15 +24,25 @@ const getCarts = async(req, res) =>{
     const carts = await cartController.getCarts()
     
     if (carts) return res.status(200).json({ status: "ok", data: carts })
-
-    res.status(404).json({ status: "error", message: "data not found"})
+    CustomErrors.createError({
+        name: "database error",
+        cause: "database internal error",    
+        message: "error geting carts",
+        code: EnumErrors.DATABASE_ERROR
+    })
+    // res.status(404).json({ status: "error", message: "data not found"})
 }
 
 const addCart = async(req, res) =>{
     const createdCart = await cartController.addCart()
     if (createdCart) return res.status(201).json({ status: "ok", data: createdCart })
-
-    res.status(400).json({ status: "error", message: "bad request"})
+    CustomErrors.createError({
+        name: "database error",
+        cause: "database internal error",    
+        message: "error triying to create cart",
+        code: EnumErrors.DATABASE_ERROR
+    })
+    // res.status(400).json({ status: "error", message: "bad request"})
 }
 
 const emptyCart = async(req, res) =>{
@@ -61,8 +73,14 @@ const addProductToCart = async(req, res) =>{
         const result = await cartController.addProductToCart(cid, cart)
         if (result) return res.json("producto agregado exitosamente")
 
-        return res.status(400).json({ status: "error", message: "bad request"})
+        CustomErrors.createError({
+            name: "database error",
+            cause: "database internal error",    
+            message: "error triying to add product to cart",
+            code: EnumErrors.DATABASE_ERROR
+        })
     } else res.status(404).json({ status: "error", message: "cart not found"})
+
 }
 
 const deleteProductOfThecart = async(req, res) =>{
@@ -90,7 +108,8 @@ const purchaseCart = async(req, res) =>{
     const {cid} = req.params
     const noStockProducts = []
     const cart = await cartController.getCart(cid).populate("products.product")
-    let total = 0;
+    if (cart){
+        let total = 0;
     for (const product of cart.products) {
         const dbProduct = await productController.getProduct(product.product.id);
         if (dbProduct.stock >= product.quantity) {
@@ -115,6 +134,8 @@ const purchaseCart = async(req, res) =>{
         purchaser: email
     })
     res.status(200).json({ status: "ok", data: {ticket, noStockProducts} })
+    }
+    res.status(404).json({ status: "error", message: "cart not found"})
 }
 
 export default{
