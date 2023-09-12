@@ -60,7 +60,7 @@ const addProductToCart = async(req, res) =>{
     if (!cid || !pid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
     let cart = await cartController.getCart(cid)
-    console.log(cart.products[0])
+    
     
     if (cart){
         const existingProductIndex = cart.products.findIndex(item => item.product.equals(pid));
@@ -133,7 +133,8 @@ const purchaseCart = async(req, res) =>{
         amount: total,
         purchaser: email
     })
-    res.status(200).json({ status: "ok", data: {ticket, noStockProducts} })
+    req.logger.info(`cart ${cart.id} purchase`)
+    return res.status(200).json({ status: "ok", data: {ticket, noStockProducts} })
     }
     res.status(404).json({ status: "error", message: "cart not found"})
 }

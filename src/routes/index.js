@@ -4,7 +4,21 @@ import chatRouter from "./chat.router.js"
 import productsRouter from "./products.router.js"
 import sessionsRouter from "./sessions.router.js"
 import viewsRouter from "./views.router.js"
-import { createTransport } from "nodemailer";
+
+
+
+const router = Router();
+
+router.use("/", viewsRouter);
+router.use("/api/products", productsRouter);
+router.use("/api/carts", cartsRouter);
+router.use("/chat", chatRouter);
+router.use("/api/sessions", sessionsRouter)
+
+export default router;
+
+
+
 
 // const TEST_MAIL = "cheyanne.haley@ethereal.email"
 // const PASS = "Yswf6NP2MUepWaBQgg"
@@ -38,14 +52,3 @@ import { createTransport } from "nodemailer";
 // } catch (error) {
 //     console.log("error", error);    
 // }
-
-
-const router = Router();
-
-router.use("/", viewsRouter);
-router.use("/api/products", productsRouter);
-router.use("/api/carts", cartsRouter);
-router.use("/chat", chatRouter);
-router.use("/api/sessions", sessionsRouter)
-
-export default router;

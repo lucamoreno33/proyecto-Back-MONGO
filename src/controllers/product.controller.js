@@ -45,8 +45,10 @@ const addProduct = async(req, res) =>{
         }
         const product = req.body;
         const createdProduct = await productController.addProduct(product)
-        if (createdProduct) return res.status(201).json({ status: "Ok", data: createdProduct})
-
+        if (createdProduct) {
+            req.logger.info("producto creado")
+            return res.status(201).json({ status: "Ok", data: createdProduct})
+        }
         return res.status(400).json({status: "error", message: "bad request" })
     } 
 
@@ -83,7 +85,9 @@ const deleteProduct = async(req, res) =>{
     const { Pid } = req.params;
     if (Pid){
         const result = await productController.deleteProduct(Pid);
-        if (result) return res.sendStatus(204);
+        if (result) {
+            req.logger.warning("producto borrado de la db")
+            return res.sendStatus(204);}
 
         CustomErrors.createError({
             name: "database error",

@@ -15,6 +15,16 @@ router.get("/register", viewsController.registerRender)
 
 router.get("/login", viewsController.loginRender)
 
+router.get("/loggerTest", (req, res) =>{
+    
+    req.logger.debug("prueba logger")
+    req.logger.http("prueba logger")
+    req.logger.info("prueba logger")
+    req.logger.warning("prueba logger")
+    req.logger.error("pueba logger")
+    req.logger.fatal("prueba logger")
+})
+
 
 
 export default router;

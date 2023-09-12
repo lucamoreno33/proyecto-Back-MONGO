@@ -30,6 +30,7 @@ const initializePassport = () =>{
                 newUser.role = "ADMIN" 
             }
             const result = await userModel.create(newUser);
+            req.logger.info(`nuevo usuario creado: ${newUser.email}`)
             return done(null, result);
         } catch (error) {
             return done("error al obtener el usuario " + error);            

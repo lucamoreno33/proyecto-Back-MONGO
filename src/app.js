@@ -7,7 +7,7 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 import config from './config/config.js';
-
+import { addLogger } from './utils/logger.js';
 import router from './routes/index.js';
 
 import errorHandler from './middlewares/errorHandler.js';
@@ -32,6 +32,8 @@ app.use(
         saveUnitialized: false,
     })
 );
+
+app.use(addLogger)
 
 initializePassport();
 app.use(passport.initialize());
