@@ -1,3 +1,5 @@
+
+
 const registerSuccess = async(req, res) =>{
     res.send({status:"success", message: "bienvenido, usuario creado"});
 }
@@ -15,8 +17,12 @@ const githubcallback = async(req, res) =>{
     res.redirect("/current");
 }
 
+
+
 export default{
     registerSuccess,
     login,
-    githubcallback
+    githubcallback,
+    
+    
 }

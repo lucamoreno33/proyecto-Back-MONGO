@@ -43,6 +43,11 @@ app.use(errorHandler);
 const httpServer = app.listen(PORT, () => console.log(`server is listening on port ${PORT}`));
 const io = new Server(httpServer)
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); 
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 
 io.on("connection", async (socket) =>{
     let messages = await messagesManager.getMessages()
@@ -53,6 +58,7 @@ io.on("connection", async (socket) =>{
         io.emit("messageLogs", messages)
     })
 })
+
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`)

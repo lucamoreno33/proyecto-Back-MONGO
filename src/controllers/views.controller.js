@@ -1,6 +1,7 @@
 import productModel from "../dao/mongo/models/productModel.js";
 import UserDTO from "../dao/DTOs/User.dto.js";
 
+
 const home = async(req, res) =>{
     const { limit, page = 1, sort, query, statusQuery} = req.query;
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest} =
@@ -28,9 +29,12 @@ const registerRender = (req, res) =>{
     res.render("register")
 }
 
+
 export default{
     home,
     current,
     loginRender,
-    registerRender
+    registerRender,
+    
+    
 }

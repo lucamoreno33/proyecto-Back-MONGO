@@ -15,8 +15,9 @@ router.get("/register", viewsController.registerRender)
 
 router.get("/login", viewsController.loginRender)
 
+
 router.get("/loggerTest", (req, res) =>{
-    
+
     req.logger.debug("prueba logger")
     req.logger.http("prueba logger")
     req.logger.info("prueba logger")
@@ -24,6 +25,7 @@ router.get("/loggerTest", (req, res) =>{
     req.logger.error("pueba logger")
     req.logger.fatal("prueba logger")
 })
+
 
 
 
