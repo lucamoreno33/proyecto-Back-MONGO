@@ -2,6 +2,7 @@ import { Router } from "express";
 import passport from "passport";
 import sessionsController from "../controllers/sessions.controller.js";
 
+
 const router = Router();
 
 router.post('/register', passport.authenticate("register"), sessionsController.registerSuccess)

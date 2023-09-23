@@ -16,7 +16,12 @@ const productSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
-    stock: Number
+    stock: Number,
+    owner: {
+        type: String,
+        default: "ADMIN"
+    }
+
 })
 productSchema.plugin(mongoosePaginate);
 const productModel = mongoose.model(productsCollection, productSchema);

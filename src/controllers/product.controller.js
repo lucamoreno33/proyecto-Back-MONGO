@@ -3,6 +3,7 @@ import CustomErrors from "../utils/errors/Custom.errors.js";
 import generateProductErrorInfo from "../utils/errors/info.errors.js";
 import EnumErrors from "../utils/errors/Enum.errors.js";
 import { generateProduct } from "../dao/Mocks/products.Mock.js";
+
 const productController = new productManager();
 
 const getProduct = async(req, res) =>{
@@ -33,6 +34,7 @@ const getProducts = async(req, res) => {
 
 
 const addProduct = async(req, res) =>{
+        
         const {title, description, thumbnails, price, stock, code, status, brand} = req.body
         if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
             CustomErrors.createError({
@@ -43,7 +45,11 @@ const addProduct = async(req, res) =>{
             })
             // return res.status(400).json({ status: "error", message: "no data sent!" })
         }
-        const product = req.body;
+        req.session.user = req.user
+        const product = {
+            ...req.body,
+            owner: req.user.email
+        };
         const createdProduct = await productController.addProduct(product)
         if (createdProduct) {
             req.logger.info("producto creado")
@@ -83,8 +89,10 @@ const updateProduct = async(req, res) =>{
 
 const deleteProduct = async(req, res) =>{
     const { Pid } = req.params;
-    if (Pid){
-        const result = await productController.deleteProduct(Pid);
+    req.session.user = req.user
+    const product = await productController.getProduct(Pid) 
+    if (product.owner === req.user.email || req.user.role === "ADMIN"){
+        const result = await productController.deleteProduct(product.id);
         if (result) {
             req.logger.warning("producto borrado de la db")
             return res.sendStatus(204);}

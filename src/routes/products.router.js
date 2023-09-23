@@ -9,11 +9,12 @@ router.get("/" ,authorization("ADMIN"), productController.getProducts)
 
 router.get("/:Pid", authorization("ADMIN"), productController.getProduct)
 
-router.post("/", authorization("ADMIN"), productController.addProduct)
+router.post("/", authorization(["ADMIN", "premium"]), productController.addProduct)
     
 
 router.put("/:Pid", authorization("ADMIN"), productController.updateProduct)
 
-router.delete("/:Pid", authorization("ADMIN"), productController.deleteProduct)
+router.delete("/:Pid", authorization(["ADMIN", "premium"]), productController.deleteProduct)
 
 export default router
+

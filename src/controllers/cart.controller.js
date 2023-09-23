@@ -57,10 +57,16 @@ const emptyCart = async(req, res) =>{
 
 const addProductToCart = async(req, res) =>{
     const {cid, pid} = req.params
+
     if (!cid || !pid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
+    const product = await productController.getProduct(pid)
     let cart = await cartController.getCart(cid)
+    req.session.user = req.user
     
+    if (product.owner === req.user.email){
+        return res.status(400).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
+    }
     
     if (cart){
         const existingProductIndex = cart.products.findIndex(item => item.product.equals(pid));
