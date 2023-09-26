@@ -1,0 +1,256 @@
+openapi: "3.1.0"
+info:
+  title: API de Carritos
+  version: "1.0"
+paths:
+  /api/carts:
+    get:
+      summary: Obtiene todos los carritos
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: Todos los carritos fueron obtenidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cart"
+        "3": 
+          description: Error de base de datos 
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"
+
+    post:
+      summary: Crea un nuevo carrito
+      tags:
+        - Carts
+      responses:
+        "201":
+          description: Carrito creado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "3": 
+          description: Error de base de datos 
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"
+
+  /api/carts/{cid}:
+    get:
+      summary: Obtiene un carrito por su ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito que buscas
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Carrito encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "400":
+          description: Faltan datos, no se encuentra el cid
+        "404":
+          description: Carrito no 
+          
+    put:
+      summary: Actualiza un carrito existente
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  product:
+                    type: string
+                    description: ID del producto
+      responses:
+        "200":
+          description: Carrito actualizado
+        "400":
+          description: Faltan datos, no se encuentra el cid y/o el requestBody
+        "404":
+          description: Carrito no encontrado
+
+    delete:
+      summary: Vacia el carrito
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID del carrito que buscas
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Carrito vaciado con éxito
+        "400":
+          description: Faltan datos, no se encuentra el cid
+        "404":
+          description: Carrito no encontrado
+
+  /api/carts/{cid}/purchase:
+    put:
+      summary: Ejecutar la compra de los productos
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: ID del carrito a comprar
+      responses:
+        "200":
+          description: Compra exitosa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessPurchaseResponse"
+        "404":
+          description: Carrito no encontrado
+
+  /api/carts/{cid}/products/{pid}:
+    post:
+      summary: Agrega un producto al carrito
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: ID del carrito al que se agregará el producto
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: ID del producto que se agregará al carrito
+      responses:
+        "3": 
+          description: Error de base de datos 
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"
+        "200":
+          description: Producto agregado exitosamente
+        "400":
+          description: Faltan datos, no se encuentra el cid y/o el pid
+        "403":
+          description: El propietario de un producto no puede agregarlo a su propio carrito
+        "404":
+          description: Carrito no encontrado
+
+    delete:
+      summary: Elimina un producto del carrito
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          schema:
+            type: string
+          description: ID del carrito del que se eliminará el producto
+        - in: path
+          name: pid
+          required: true
+          schema:
+            type: string
+          description: ID del producto que se eliminará del carrito
+      responses:
+        "204":
+          description: Producto eliminado exitosamente
+        '400':
+          description: Faltan datos, no se encuentra el cid y/o el pid
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        products:
+          type: array
+          description: Productos en el carrito
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: ID del producto
+              quantity:
+                type: number
+                description: Cantidad del producto en el carrito
+    CustomError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: CustomError
+        cause:
+          type: string
+          example: Error interno del servidor.
+        message:
+          type: string
+          example: Se ha producido un error personalizado.
+        code:
+          type: integer
+          example: 3
+    SuccessPurchaseResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        ticket:
+          $ref: "#/components/schemas/Ticket"
+        noStockProducts:
+          type: array
+          items:
+            type: string
+    Ticket:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Codigo del ticket
+        purchase_datetime:
+          type: string
+          format: date-time
+          description: Momento de la compra
+        amount:
+          type: number
+          description: Total de la compra
+        purchaser:
+          type: string
+          example: example@example.com
+          description: Email del comprador

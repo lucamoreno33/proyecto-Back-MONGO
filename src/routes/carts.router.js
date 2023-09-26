@@ -18,6 +18,6 @@ router.delete("/:cid/products/:pid", authorization("user"), cartController.delet
 
 router.put("/:cid", cartController.updateCart)
 
-router.get("/:cid/purchase", cartController.purchaseCart)
+router.put("/:cid/purchase", cartController.purchaseCart)
 
 export default router

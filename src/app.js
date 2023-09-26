@@ -9,13 +9,14 @@ import initializePassport from './config/passport.config.js';
 import config from './config/config.js';
 import { addLogger } from './utils/logger.js';
 import router from './routes/index.js';
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 
 import errorHandler from './middlewares/errorHandler.js';
 
 import chatManager from './dao/mongo/chat.mongo.js';
 const messagesManager = new chatManager();
 import __dirname from "./utils.js"
-
 
 const PORT = config.PORT
 
@@ -34,6 +35,22 @@ app.use(
 );
 
 app.use(addLogger)
+
+
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.1",
+        info: {
+            title: "Documentación de AdoptMe!!!",
+            description: "La documentación de los endpoints",
+        },
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`],
+};
+
+const specs = swaggerJSDoc(swaggerOptions);
+app.use("/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+
 
 initializePassport();
 app.use(passport.initialize());

@@ -52,7 +52,7 @@ const emptyCart = async(req, res) =>{
     const result = await cartController.updateCart(cid, [])
     if (result) return res.status(200).json({status:"ok",message:"carro vaciado"})
     
-    res.status(404).json({ status: "error", message: "bad request"})
+    res.status(404).json({ status: "error", message: "cart not found"})
 }
 
 const addProductToCart = async(req, res) =>{
@@ -65,7 +65,7 @@ const addProductToCart = async(req, res) =>{
     req.session.user = req.user
     
     if (product.owner === req.user.email){
-        return res.status(400).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
+        return res.status(403).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
     }
     
     if (cart){
@@ -73,11 +73,11 @@ const addProductToCart = async(req, res) =>{
         if (existingProductIndex !== -1) {
             cart.products[existingProductIndex].quantity += 1;
             await cartController.addProductToCart(cid, cart)
-            return res.json("producto agregado exitosamente")
+            return res.status(200).json("producto agregado exitosamente")
         }
         cart.products.push({ product:pid, quantity: 1 })
         const result = await cartController.addProductToCart(cid, cart)
-        if (result) return res.json("producto agregado exitosamente")
+        if (result) return res.status(200).json("producto agregado exitosamente")
 
         CustomErrors.createError({
             name: "database error",
@@ -94,7 +94,7 @@ const deleteProductOfThecart = async(req, res) =>{
     if (!cid || !pid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
     const result = await cartController.deleteProductOfThecart(cid, pid)
-    if (result) return res.json("producto eliminado del carrito")
+    if (result) return res.status(204).json("producto eliminado del carrito")
 
     res.status(400).json("el id del carro y/o del producto es incorrecto")
 }
