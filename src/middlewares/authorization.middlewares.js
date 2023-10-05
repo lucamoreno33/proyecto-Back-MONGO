@@ -10,4 +10,4 @@ const authorization = (allowedRoles) => {
     };
 };
 
-export default authorization;
+export {authorization as default};

@@ -4,13 +4,18 @@ import generateProductErrorInfo from "../utils/errors/info.errors.js";
 import EnumErrors from "../utils/errors/Enum.errors.js";
 import { generateProduct } from "../dao/Mocks/products.Mock.js";
 
+
 const productController = new productManager();
 
 const getProduct = async(req, res) =>{
         const { Pid } = req.params;
         const result = await productController.getProduct(Pid)
-        if (result) return res.status(200).json({status: "ok", data: result});
-        return res.status(404).json({ message: "product not found"})
+        console.log(result)
+        if (!result) {
+            return res.status(404).json({ error: "error", message: "product not found" })
+        }
+        return res.status(200).json({ status: "ok", data: result });
+        
     }
 
 const getProducts = async(req, res) => {
@@ -34,56 +39,61 @@ const getProducts = async(req, res) => {
 
 
 const addProduct = async(req, res) =>{
-        
-        const {title, description, thumbnails, price, stock, code, status, brand} = req.body
-        if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
-            CustomErrors.createError({
-                name: "product creation error",
-                cause: generateProductErrorInfo({title, description, price, brand, code, stock, status, thumbnails}),
-                message: "Error triying to add product",
-                code: EnumErrors.INVALID_TYPES_ERROR,
-            })
-            // return res.status(400).json({ status: "error", message: "no data sent!" })
-        }
-        req.session.user = req.user
-        const product = {
-            ...req.body,
-            owner: req.user.email
-        };
-        const createdProduct = await productController.addProduct(product)
-        if (createdProduct) {
-            req.logger.info("producto creado")
-            return res.status(201).json({ status: "Ok", data: createdProduct})
-        }
-        return res.status(400).json({status: "error", message: "bad request" })
+        try {
+            const {title, description, thumbnails, price, stock, code, status, brand} = req.body
+            if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
+                throw CustomErrors.createError({
+                    name: "product creation error",
+                    cause: generateProductErrorInfo({title, description, price, brand, code, stock, status, thumbnails}),
+                    message: "Error triying to add product",
+                    code: EnumErrors.INVALID_TYPES_ERROR,
+                })
+                // return res.status(400).json({ status: "error", message: "no data sent!" })
+            }
+            req.session.user = req.user
+            const product = {
+                ...req.body,
+                owner: req.user.email
+
+            };
+            const createdProduct = await productController.addProduct(product)
+            if (createdProduct) {
+                req.logger.info("producto creado")
+                return res.status(201).json({ status: "Ok", data: createdProduct})
+            }
+        } catch (error) {
+            console.log(error)
+            return res.status(400).json({status: "error", message: "bad request" })
     } 
+        }
+        
 
 
 const updateProduct = async(req, res) =>{
+    try {
         const {title, description, thumbnails, price, stock, code, status, brand} = req.body
         if (!title || !description || !thumbnails || !price || !brand || !stock || !code || !status){
-            CustomErrors.createError({
+            throw CustomErrors.createError({
                 name: "product creation error",
                 cause: generateProductErrorInfo({title, description, price, brand, code, stock, status, thumbnails}),
                 message: "Error triying to update product",
                 code: EnumErrors.INVALID_TYPES_ERROR,
             })
-            // return res.status(400).json({ status: "error", message: "no data sent!" })
+            
         } 
         const { Pid } = req.params;
+        const existingProduct = await productController.getProduct(Pid)
         const newProduct = req.body;
-        if (Pid) {
-            const result = await productController.updateProduct(Pid, newProduct);
-            if (result) return res.json({ status: "ok", data: newProduct});
-
-            CustomErrors.createError({
-                name: "database error",
-                cause: "database internal error",    
-                message: "error updating product",
-                code: EnumErrors.DATABASE_ERROR
-            })
+        if (existingProduct) {
+            await productController.updateProduct(Pid, newProduct);
+            return res.json({ status: "ok", data: newProduct})
         }
-        return res.status(400).json({ status: "error", message: "bad request" })
+        return res.status(404).json({ error: "error", message: "product not found" })
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ status: "error", message: "no data sent!" })
+    }
+
     }
 
 
@@ -104,7 +114,7 @@ const deleteProduct = async(req, res) =>{
             code: EnumErrors.DATABASE_ERROR
         })
     }
-    return res.status(400).json({status: "error", message: "bad request"})
+    return res.status(401).json({status: "error", message: "debes ser dueño del producto para borrarlo"})
 }
 
 const create100Products = async (req, res) =>{

@@ -6,17 +6,17 @@ const router = Router();
 
 router.get("/", authorization("ADMIN"),cartController.getCarts)
 
-router.get("/:cid", cartController.getCart)
+router.get("/:cid", authorization("user"), cartController.getCart)
 
-router.post("/", authorization("ADMIN"), cartController.addCart)
+router.post("/", authorization("user"), cartController.addCart)
 
-router.post("/:cid/products/:pid", cartController.addProductToCart)
+router.post("/:cid/products/:pid", authorization("user"), cartController.addProductToCart)
 
 router.delete("/:cid", authorization("user"), cartController.emptyCart)
 
 router.delete("/:cid/products/:pid", authorization("user"), cartController.deleteProductOfThecart)
 
-router.put("/:cid", cartController.updateCart)
+router.put("/:cid", router.put("/:cid", authorization("user"), cartController.updateCart), cartController.updateCart)
 
 router.put("/:cid/purchase", cartController.purchaseCart)
 

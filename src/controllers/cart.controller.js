@@ -30,7 +30,7 @@ const getCarts = async(req, res) =>{
         message: "error geting carts",
         code: EnumErrors.DATABASE_ERROR
     })
-    // res.status(404).json({ status: "error", message: "data not found"})
+    res.status(404).json({ status: "error", message: "data not found"})
 }
 
 const addCart = async(req, res) =>{
@@ -50,7 +50,7 @@ const emptyCart = async(req, res) =>{
     if (!cid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
     const result = await cartController.updateCart(cid, [])
-    if (result) return res.status(200).json({status:"ok",message:"carro vaciado"})
+    if (result) return res.status(200).json({status:"ok", data: result})
     
     res.status(404).json({ status: "error", message: "cart not found"})
 }
@@ -62,11 +62,11 @@ const addProductToCart = async(req, res) =>{
 
     const product = await productController.getProduct(pid)
     let cart = await cartController.getCart(cid)
-    req.session.user = req.user
+    // req.session.user = req.user
     
-    if (product.owner === req.user.email){
-        return res.status(403).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
-    }
+    // if (product.owner === req.user.email){
+    //     return res.status(403).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
+    // }
     
     if (cart){
         const existingProductIndex = cart.products.findIndex(item => item.product.equals(pid));
@@ -77,7 +77,7 @@ const addProductToCart = async(req, res) =>{
         }
         cart.products.push({ product:pid, quantity: 1 })
         const result = await cartController.addProductToCart(cid, cart)
-        if (result) return res.status(200).json("producto agregado exitosamente")
+        if (result) return res.status(200).json({status: "ok", message: "producto agregado exitosamente", data: result})
 
         CustomErrors.createError({
             name: "database error",
@@ -96,7 +96,7 @@ const deleteProductOfThecart = async(req, res) =>{
     const result = await cartController.deleteProductOfThecart(cid, pid)
     if (result) return res.status(204).json("producto eliminado del carrito")
 
-    res.status(400).json("el id del carro y/o del producto es incorrecto")
+    res.status(404).json("el id del carro y/o del producto es incorrecto")
 }
 
 const updateCart = async(req, res) =>{
@@ -105,7 +105,7 @@ const updateCart = async(req, res) =>{
 
     const newProducts = req.body;
     const result = await cartController.updateCart(cid, newProducts)
-    if (result) return res.status(200).json({status: "ok", message:"carro actualizado"})
+    if (result) return res.status(200).json({status: "ok", data: result})
     
     res.status(404).json({ status: "error", message: "cart not found"})
 }

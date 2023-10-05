@@ -31,13 +31,21 @@ export default class productManager{
         return request
     }
     getProduct = (id) =>{
-        return productModel.findById(id)
+        const product = productModel.findById(id)
+        if (!product){
+            return null
+        }
+        return product
     } 
     addProduct = (product) => {
         return productModel.create(product)
     }
     updateProduct = (id, product) =>{
-        return productModel.findByIdAndUpdate(id, product)
+        const updatedProduct = productModel.findByIdAndUpdate(id, product)
+        if (!updatedProduct){
+            return null
+        }
+        return updatedProduct
     }
     restProductStock = (id, number) =>{
         const product = productModel.findById(id)

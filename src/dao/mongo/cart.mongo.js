@@ -6,7 +6,8 @@ export default class cartManager{
     }
     getCart = (cid) =>{
         return cartModel.findById(cid)
-    }
+    } 
+    
     addCart = () => {
         return cartModel.create({products:[]})
         
@@ -21,5 +22,5 @@ export default class cartManager{
     updateCart = (cid, newProducts) =>{
         return cartModel.findByIdAndUpdate(cid, { $set: { products: newProducts } })
     }
-    
+
 }
