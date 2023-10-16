@@ -62,15 +62,44 @@ const passwordRecovery = async (req, res, next) =>{
 const changeRole = async(req, res) =>{
     const {uid} = req.params
     const user = await userController.getUser(uid)
-    await userController.changeRole(user.id, user.role)
-    res.send({status:"success", message: `has cambiado el rol del usuario ${user.email}`});
+    if (user.role === "premium"){
+        await userController.changeRole(user.id, user.role)
+        return res.send({status:"success", message: `has cambiado el rol del usuario ${user.email}`});
+    }
+    const requiredFiles = ["identificacion", "comprobante-domicilio", "comprobante-cuenta"];
+    const userDocuments = user.documents.map((doc) => doc.name);
+    // aca uso el requiredFiles en el inicio de la constante missingFiles para poder ubicar los archivos faltantes, userDocuments tiene en su haber los names de los archivos, contrasto con el startWith el cual corre con los requiredFiles, y niego el userDocuments para asi de no no empezar con los nombres especificados me guarde los faltantes para despues
+    const missingFiles = requiredFiles.filter((file) => !userDocuments.some((name) => name.startsWith(file)));
+    if (missingFiles.length === 0){
+        await userController.changeRole(user.id, user.role)
+        res.send({status:"success", message: `has cambiado el rol del usuario ${user.email}`});
+    }
+    res.status(400).send({ status: "error", message: `El usuario debe cargar los siguientes archivos: ${missingFiles.join(", ")}` });
+    
+    
 }
 
-
+const uploadDocuments = async (req, res) => {
+    const {uid} = req.params
+    const uploadedFiles = req.files;
+    if (uploadedFiles.length === 0) {
+        return res.status(400).json({ message: "No se subieron documentos." });
+    }
+    try {
+        const user = await userController.getUser(uid);
+        user.documents.push({ name: uploadedFiles[0].originalname, reference: uploadedFiles[0].path });
+        user.save()
+        req.logger.info(`El usuario: ${user.email} a realizado una carga de documentos`)
+        res.status(201).json({ message: "documento cargado correctamente." });
+    } catch (err) {
+        res.status(500).json({ message: "A ocurrido un error al cargar archivos." });
+    }
+};
 
 export default {
     passwordRecoveryMail,
     passwordRecovery,
     passwordRecoveryRender,
-    changeRole
+    changeRole,
+    uploadDocuments
 }

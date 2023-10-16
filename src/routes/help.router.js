@@ -1,12 +1,13 @@
 import { Router } from "express";
-import helpersController from "../controllers/helpers.controller.js";
+import helpersController from "../controllers/user.controller.js";
+import authorization from "../middlewares/authorization.middlewares.js";
 
 const router = Router();
 
-router.post("/passwordRecoveryMail", helpersController.passwordRecoveryMail)
+router.post("/passwordRecoveryMail", authorization(["user", "premium", "ADMIN"]), helpersController.passwordRecoveryMail)
 
-router.get("/passwordRecovery/:token", helpersController.passwordRecoveryRender)
+router.get("/passwordRecovery/:token", authorization(["user", "premium", "ADMIN"]), helpersController.passwordRecoveryRender)
 
-router.post("/passwordRecovery", helpersController.passwordRecovery)
+router.post("/passwordRecovery", authorization(["user", "premium", "ADMIN"]), helpersController.passwordRecovery)
 
 export default router

@@ -5,16 +5,19 @@ import productController from "../controllers/product.controller.js";
 
 const router = Router();
 
-router.get("/",authorization("user"), viewsController.home)
+router.get("/",authorization(["user", "premium"]), viewsController.home)
 
 router.get("/mockingproducts", authorization("ADMIN"), productController.create100Products)
 
-router.get("/current", authorization("user"), viewsController.current)
+router.get("/current", authorization(["user", "premium"]), viewsController.current)
 
 router.get("/register", viewsController.registerRender)
 
 router.get("/login", viewsController.loginRender)
 
+router.get("/logout", authorization(["user", "premium", "ADMIN"]), viewsController.logoutRender)
+
+router.get("/uploadFile", viewsController.renderUploadForm)
 
 router.get("/loggerTest", (req, res) =>{
 

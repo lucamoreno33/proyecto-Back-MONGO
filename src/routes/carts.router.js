@@ -6,18 +6,18 @@ const router = Router();
 
 router.get("/", authorization("ADMIN"),cartController.getCarts)
 
-router.get("/:cid", authorization("user"), cartController.getCart)
+router.get("/:cid", authorization(["user", "premium", "ADMIN"]), cartController.getCart)
 
-router.post("/", authorization("user"), cartController.addCart)
+router.post("/", authorization(["user", "premium", "ADMIN"]), cartController.addCart)
 
-router.post("/:cid/products/:pid", authorization("user"), cartController.addProductToCart)
+router.post("/:cid/products/:pid", authorization(["user", "premium", "ADMIN"]), cartController.addProductToCart)
 
-router.delete("/:cid", authorization("user"), cartController.emptyCart)
+router.delete("/:cid", authorization(["user", "premium", "ADMIN"]), cartController.emptyCart)
 
-router.delete("/:cid/products/:pid", authorization("user"), cartController.deleteProductOfThecart)
+router.delete("/:cid/products/:pid", authorization(["user", "premium", "ADMIN"]), cartController.deleteProductOfThecart)
 
-router.put("/:cid", router.put("/:cid", authorization("user"), cartController.updateCart), cartController.updateCart)
+router.put("/:cid", router.put("/:cid", authorization(["ADMIN"]), cartController.updateCart), cartController.updateCart)
 
-router.put("/:cid/purchase", cartController.purchaseCart)
+router.put("/:cid/purchase", authorization(["user", "premium", "ADMIN"]), cartController.purchaseCart)
 
 export default router

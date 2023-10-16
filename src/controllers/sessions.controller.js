@@ -19,6 +19,14 @@ const githubcallback = async(req, res) =>{
     res.redirect("/current");
 }
 
+const logout = async(req, res) =>{
+        console.log(logout)
+        req.logger.info(`logout del usuario: ${req.user.email}`)
+        req.logout()
+        req.session.destroy()
+        res.redirect('/')
+
+}
 
 
 
@@ -26,5 +34,6 @@ export default{
     registerSuccess,
     login,
     githubcallback,
+    logout
     
 }

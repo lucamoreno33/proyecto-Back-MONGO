@@ -1,0 +1,15 @@
+<div name="userId" id="{{userId}}">
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" multiple>
+        <label for="fileType">Seleccione el tipo de archivo:</label>
+        <select name="fileType">
+            <option value="profile">Imagen de Perfil</option>
+            <option value="product">Imagen de Producto</option>
+            <option value="document">Documento</option>
+        </select>
+        <button type="submit">Subir archivo</button>
+    </form>
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="module" src="/js/fileUpload.js"></script>

@@ -29,12 +29,21 @@ const registerRender = (req, res) =>{
     res.render("register")
 }
 
+const logoutRender = (req, res) => {
+    res.render("logout")
+}
+
+const renderUploadForm = (req, res) => {
+    
+    const userId = req.session.user._id;
+    res.render("fileUpload", { userId });
+};
 
 export default{
     home,
     current,
     loginRender,
     registerRender,
-    
-    
+    logoutRender,
+    renderUploadForm
 }

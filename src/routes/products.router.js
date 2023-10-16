@@ -4,13 +4,12 @@ import productController from "../controllers/product.controller.js";
 
 const router = Router();
 
-
 router.get("/", authorization("ADMIN"), productController.getProducts)
 
 router.get("/:Pid", authorization("ADMIN"), productController.getProduct)
 
 router.post("/", authorization(["ADMIN", "premium"]), productController.addProduct)
-    // acordarse de volver a agregar owner
+
 
 router.put("/:Pid",authorization("ADMIN"), productController.updateProduct)
 

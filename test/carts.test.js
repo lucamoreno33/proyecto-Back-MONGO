@@ -7,7 +7,7 @@ import config from "../src/config/config.js"
 import cartModel from "../src/dao/mongo/models/cartModel.js"
 const expect = chai.expect
 const requester = supertest("http://localhost:3000")
-
+const agent = supertest.agent(`http://localhost:3000`);
 
 mongoose.connect(config.MONGO_URL)
 const cartsController = new cartManager()
@@ -15,7 +15,17 @@ const productController = new productManager()
 
 describe('Test de carts', function(){
     describe("GET /api/carts", function(){
+        it("debve conectar", async function(){
+            
+        })
         it("debe devolver un array con los carts", async function(){
+            const loginResponse = await agent.post("/api/sessions/login").send({
+                email: "luca@mail.com",
+                password: "newpass",
+            });
+            expect(loginResponse.status).to.equal(200);
+            
+            
             const {_body} = await requester.get('/api/carts')
             expect(_body.status).to.equal("ok");
             expect(_body.data).to.be.an('array');
