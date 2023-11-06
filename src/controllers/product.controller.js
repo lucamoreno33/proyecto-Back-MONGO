@@ -2,7 +2,7 @@ import productManager from "../dao/mongo/product.mongo.js";
 import CustomErrors from "../utils/errors/Custom.errors.js";
 import generateProductErrorInfo from "../utils/errors/info.errors.js";
 import EnumErrors from "../utils/errors/Enum.errors.js";
-import { generateProduct } from "../dao/Mocks/products.Mock.js";
+import { generateProduct } from "../dao/Mocks/products.mock.js";
 
 
 const productController = new productManager();
