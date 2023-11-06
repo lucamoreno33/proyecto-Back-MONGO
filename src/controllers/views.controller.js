@@ -14,6 +14,7 @@ const home = async(req, res) =>{
     req.user = req.session.user
     const cart = req.session.user.cart[0]
     const products = docs;
+    const url = process.env.URL
     res.render("home", {
             products,
             page: rest.page,
@@ -21,7 +22,8 @@ const home = async(req, res) =>{
             hasNextPage,
             prevPage,
             nextPage,
-            cart
+            cart,
+            url
         })
 }
 const current = (req, res) =>{
