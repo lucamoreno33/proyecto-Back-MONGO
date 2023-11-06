@@ -1,6 +1,7 @@
+import config from "../../config/config";
 const buttons = document.querySelectorAll('#productsList button');
 const cartLink = document.getElementById("cartLink")
-const url = process.env.URL
+const url = config.URL
 buttons.forEach((button) => {
     button.addEventListener('click', async () => {
         let cart = document.getElementById("cartLink").name

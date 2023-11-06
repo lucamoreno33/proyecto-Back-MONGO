@@ -11,5 +11,6 @@ export default {
     MONGO_URL: process.env.MONGO_URL,
     SECRET: process.env.SECRET,
     GMAIL: process.env.GMAIL,
-    GMAILPASS: process.env.GMAILPASS
+    GMAILPASS: process.env.GMAILPASS,
+    URL: process.env.URL
 }
