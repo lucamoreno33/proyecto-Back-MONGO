@@ -1,7 +1,6 @@
-import config from "../../config/config";
 const buttons = document.querySelectorAll('#productsList button');
 const cartLink = document.getElementById("cartLink")
-const url = config.URL
+
 buttons.forEach((button) => {
     button.addEventListener('click', async () => {
         let cart = document.getElementById("cartLink").name
@@ -17,7 +16,7 @@ buttons.forEach((button) => {
         const data = await response.json();
         if (data.cart){
             cartLink.name = data.cart
-            cartLink.href = `${url}/cart/${data.cart}`
+            cartLink.href = `https://proyecto-back-mongo-production.up.railway.app/cart/${data.cart}`
         }
         
     });
