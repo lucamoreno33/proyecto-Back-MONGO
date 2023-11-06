@@ -3,9 +3,18 @@ import transporter from "../config/nodemailer.js";
 import tokenModel from '../dao/mongo/models/token.model.js';
 import bcrypt from "bcrypt";
 import userManager from '../dao/mongo/user.mongo.js';
-import { createHash } from '../utils.js';
+import UserDTO from '../dao/DTOs/User.dto.js';
+import CustomErrors from "../utils/errors/Custom.errors.js";
+import EnumErrors from "../utils/errors/Enum.errors.js";
 // cree este controller y su router debido a que por una razon que desconozco fallan los fetch si coloco la logica en el controller y el router de sessions
 const userController = new userManager()
+
+const getUsers = async(req, res) =>{
+    const users = await userController.getAll();
+    const userDTOs = users.map(user => new UserDTO(user));
+    res.send(userDTOs);
+}
+
 
 const passwordRecoveryMail = async(req, res) =>{
     const {email} = req.body
@@ -82,13 +91,29 @@ const changeRole = async(req, res) =>{
 const uploadDocuments = async (req, res) => {
     const {uid} = req.params
     const uploadedFiles = req.files;
-    if (uploadedFiles.length === 0) {
+    const allFiles = [].concat(
+        uploadedFiles["profile"] || [],
+        uploadedFiles["product"] || [],
+        uploadedFiles["document"] || []
+    );
+    if (allFiles.length === 0) {
         return res.status(400).json({ message: "No se subieron documentos." });
     }
     try {
         const user = await userController.getUser(uid);
-        user.documents.push({ name: uploadedFiles[0].originalname, reference: uploadedFiles[0].path });
-        user.save()
+        const profileFiles = uploadedFiles["profile"];
+        const productFiles = uploadedFiles["product"]
+        const documentFiles = uploadedFiles["document"]
+        if(profileFiles){
+            user.documents.push({ name: profileFiles[0].originalname, reference: profileFiles[0].path });
+        }
+        if(productFiles){
+            user.documents.push({ name: productFiles[0].originalname, reference: productFiles[0].path });
+        }
+        if(documentFiles){
+            user.documents.push({ name: documentFiles[0].originalname, reference: documentFiles[0].path });
+        }
+        await userController.updateUser(user.id, user)
         req.logger.info(`El usuario: ${user.email} a realizado una carga de documentos`)
         res.status(201).json({ message: "documento cargado correctamente." });
     } catch (err) {
@@ -96,10 +121,56 @@ const uploadDocuments = async (req, res) => {
     }
 };
 
+const deleteUsers = async (req, res) =>{
+    const usersToDelete = await userController.getInnactiveUsers();
+    const nonAdminUsersToDelete = usersToDelete.filter(user => user.role !== "ADMIN");
+    if (nonAdminUsersToDelete && nonAdminUsersToDelete.length > 0) {
+        const result = await userController.deleteUsers(nonAdminUsersToDelete)
+        if (result){
+            nonAdminUsersToDelete.forEach(user => {
+                const mailOptions = {
+                    from: 'hornitodebarro2@gmail.com',
+                    to: user.email,
+                    subject: 'Su usuario ha sido eliminado',
+                    html: `<p>Lo sentimos pero debido a su innactividad su cuenta ha sido eliminada, en caso de volver recuerde que siempre sera bienvenido</p>`,
+                };
+            
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('Error al enviar el correo', error);
+                    } else {
+                        console.log('Correo enviado con éxito');
+                    }
+                });
+            });
+            req.logger.warning("se han eliminado los siguientes usuarios innactivos: " + nonAdminUsersToDelete)
+            return res.sendStatus(204);
+        }
+        CustomErrors.createError({
+            name: "database error",
+            cause: "database internal error",    
+            message: "error deleting product",
+            code: EnumErrors.DATABASE_ERROR
+        })
+    } else if (nonAdminUsersToDelete.length === 0) {
+        return res.status(400).json("no hay usuarios innactivos");
+    }
+    CustomErrors.createError({
+        name: "database error",
+        cause: "database internal error",    
+        message: "error deleting product",
+        code: EnumErrors.DATABASE_ERROR
+    })
+}
+
+
 export default {
     passwordRecoveryMail,
     passwordRecovery,
     passwordRecoveryRender,
     changeRole,
-    uploadDocuments
+    uploadDocuments,
+    getUsers,
+    deleteUsers
+
 }

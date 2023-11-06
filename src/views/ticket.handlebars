@@ -1,0 +1,23 @@
+<body>
+    <nav class="d-flex justify-content-between bg-dark ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Inicio</a>
+        </div>
+        <a class="navbar-brand" href="http://localhost:3000/cart/{{cart}}" id="cartLink" name="{{cart}}">carrito</a>
+        <a href="/profile" class="navbar-brand">perfil</a>
+        <a href="/logout" class="navbar-brand">logout</a>
+    </nav>
+    <h1>Ticket Details</h1>
+    <p><strong>Code:</strong> {{ticket.code}}</p>
+    <p><strong>Purchase Date:</strong> {{ticket.purchase_datetime}}</p>
+    <p><strong>Amount:</strong>${{ticket.amount}}</p>
+    <p><strong>Purchaser:</strong> {{ticket.purchaser}}</p>
+    {{#if ticket.noStockProducts.length}}
+        <h2>No Stock Products:</h2>
+        <ul>
+            {{#each ticket.noStockProducts}}
+                <li>{{this}}</li>
+            {{/each}}
+        </ul>
+    {{/if}}
+</body>

@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
         enum: ["premium", "user", "ADMIN"], 
         default: "user" 
     },
+    cart: [
+        {type: String}
+    ]
+    ,
     documents: [
         {
             name: {
@@ -38,7 +42,11 @@ const userSchema = new mongoose.Schema({
             }
         }
     ],
-    });
-    
+    lastConnection: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 
 export const userModel = mongoose.model(collection, userSchema)

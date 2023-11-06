@@ -1,0 +1,23 @@
+<div>
+    <nav class="d-flex justify-content-between bg-dark ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Inicio</a>
+        </div>
+        <a href="/profile" class="navbar-brand">perfil</a>
+        <a href="/logout" class="navbar-brand">logout</a>
+    </nav>
+
+    <h1>Carrito:</h1>
+    {{#each products}}
+            <div>
+                <h2>{{title}}</h2>
+                <p>{{brand}}</p>
+                <p>{{description}}</p>
+                <p>Precio: {{price}}</p>
+            </div>
+    {{/each}}
+    <h2>TOTAL: {{total}}</h2>
+    <button class="btn btn-primary" id="purchaseButton" name="{{cid}}">Comprar!</button>
+</div>
+
+<script type="module" src="/js/purchase.js"></script>

@@ -4,10 +4,11 @@ import productManager from "../dao/mongo/product.mongo.js";
 import { uid } from "uid";
 import CustomErrors from "../utils/errors/Custom.errors.js";
 import EnumErrors from "../utils/errors/Enum.errors.js";
+import userManager from "../dao/mongo/user.mongo.js";
 
 const cartController = new cartManager();
 const productController = new productManager();
-
+const userController = new userManager()
 
 const getCart = async(req, res) =>{
     const { cid } = req.params;
@@ -61,24 +62,31 @@ const addProductToCart = async(req, res) =>{
     if (!cid || !pid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
     const product = await productController.getProduct(pid)
-    let cart = await cartController.getCart(cid)
-    // req.session.user = req.user
+    let cart;
+    const cartUser = await userController.getUserByEmail(req.session.user.email)
+    if (cid === "123456789012345678901234" && cartUser.cart.length === 0){
+        cart = await cartController.addCart()
+        cartUser.cart.push(cart.id)
+        await userController.updateUser(cartUser.id, cartUser)
+    }else{
+        cart = await cartController.getCart(cid)
+    }
     
-    // if (product.owner === req.user.email){
-    //     return res.status(403).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
-    // }
+    if (product.owner === req.user.email){
+        return res.status(403).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })
+    }
     
     if (cart){
         const existingProductIndex = cart.products.findIndex(item => item.product.equals(pid));
         if (existingProductIndex !== -1) {
             cart.products[existingProductIndex].quantity += 1;
-            await cartController.addProductToCart(cid, cart)
-            return res.status(200).json("producto agregado exitosamente")
+        } else {
+            cart.products.push({ product: pid, quantity: 1 });
         }
-        cart.products.push({ product:pid, quantity: 1 })
-        const result = await cartController.addProductToCart(cid, cart)
-        if (result) return res.status(200).json({status: "ok", message: "producto agregado exitosamente", data: result})
+        const result = await cartController.addProductToCart(cart.id, cart);
 
+        if(result) return res.status(200).json({ status: "ok", message: "producto agregado exitosamente", cart: cart.id})
+    
         CustomErrors.createError({
             name: "database error",
             cause: "database internal error",    
@@ -116,31 +124,32 @@ const purchaseCart = async(req, res) =>{
     const cart = await cartController.getCart(cid).populate("products.product")
     if (cart){
         let total = 0;
-    for (const product of cart.products) {
-        const dbProduct = await productController.getProduct(product.product.id);
-        if (dbProduct.stock >= product.quantity) {
-            total += product.product.price * product.quantity;
-            
-            dbProduct.stock -= product.quantity;
-            product.product.stock -= product.quantity;
-            await cartController.deleteProductOfThecart(cid, dbProduct.id)
+        for (const product of cart.products) {
+            const dbProduct = await productController.getProduct(product.product.id);
+            if (dbProduct.stock >= product.quantity) {
+                total += product.product.price * product.quantity;
+                
+                dbProduct.stock -= product.quantity;
+                product.product.stock -= product.quantity;
+                await cartController.deleteProductOfThecart(cid, dbProduct.id)
 
-            if (dbProduct.stock === 0) {
-                await productController.deleteProduct(dbProduct.id);
-            } else {
-                await productController.updateProduct(dbProduct.id, dbProduct);
-            }
-        }else noStockProducts.push(product.product.id)
-    }
-    const email = req.session.user.email
-    const ticket = await ticketModel.create({
-        code: uid(),
-        purchase_datetime: new Date,
-        amount: total,
-        purchaser: email
-    })
-    req.logger.info(`cart ${cart.id} purchase`)
-    return res.status(200).json({ status: "ok", data: {ticket, noStockProducts} })
+                if (dbProduct.stock === 0) {
+                    await productController.deleteProduct(dbProduct.id);
+                } else {
+                    await productController.updateProduct(dbProduct.id, dbProduct);
+                }
+            }else noStockProducts.push(product.product.id)
+        }
+        const email = req.session.user.email
+        const ticket = await ticketModel.create({
+            code: uid(),
+            purchase_datetime: new Date,
+            amount: total,
+            purchaser: email,
+            noStockProducts: noStockProducts
+        })
+        req.logger.info(`cart ${cart.id} purchase`)
+        return res.status(200).json({ status: "ok", data: {ticket} })
     }
     res.status(404).json({ status: "error", message: "cart not found"})
 }

@@ -1,5 +1,5 @@
-import express from 'express';
-import handlebars from 'express-handlebars';
+import express from 'express'; 
+import exphbs from 'express-handlebars';
 import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 import session from 'express-session';
@@ -11,7 +11,6 @@ import { addLogger } from './utils/logger.js';
 import router from './routes/index.js';
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUiExpress from "swagger-ui-express";
-
 import errorHandler from './middlewares/errorHandler.js';
 
 import chatManager from './dao/mongo/chat.mongo.js';
@@ -77,7 +76,14 @@ io.on("connection", async (socket) =>{
 })
 
 
-app.engine("handlebars", handlebars.engine());
+app.engine('handlebars', exphbs.engine({
+    defaultLayout: 'main',
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true,
+        allowInsecurePrototypeAccess: true,
+    },
+}));
 app.set("views", `${__dirname}/views`)
 app.set("view engine", "handlebars");
 app.use(express.urlencoded({ extended: true }))

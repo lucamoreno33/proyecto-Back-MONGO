@@ -1,13 +1,23 @@
 <div name="userId" id="{{userId}}">
+    <nav class="d-flex justify-content-between bg-dark ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Inicio</a>
+        </div>
+        <a class="navbar-brand" href="http://localhost:3000/cart/{{cart}}" id="cartLink" name="{{cart}}">carrito</a>
+        <a href="/profile" class="navbar-brand">perfil</a>
+        <a href="/logout" class="navbar-brand">logout</a>
+    </nav>
     <form id="upload-form" enctype="multipart/form-data">
-        <input type="file" name="file" multiple>
-        <label for="fileType">Seleccione el tipo de archivo:</label>
-        <select name="fileType">
-            <option value="profile">Imagen de Perfil</option>
-            <option value="product">Imagen de Producto</option>
-            <option value="document">Documento</option>
-        </select>
-        <button type="submit">Subir archivo</button>
+        <label for="profile">Imagen de Perfil:</label>
+        <input type="file" name="profile" id="profile" accept="image/*"><br>
+
+        <label for="product">Imagen de Producto:</label>
+        <input type="file" name="product" id="product" accept="image/*"><br>
+
+        <label for="document">Documento:</label>
+        <input type="file" name="document" id="document" accept=".pdf, .doc, .docx"><br>
+
+        <button type="submit">Subir archivo(s)</button>
     </form>
 </div>
 

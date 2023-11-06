@@ -11,6 +11,7 @@ const login = async(req, res) =>{
     if (!req.user) 
         return res.status(400).send({ status:"error", error: "contraseña y/o email incorrecto" });
     req.logger.info(`login del usuario: ${req.user.email}`)
+    userController.updateConnection(req.user.id)
     res.send({ status: "success", payload: req.user });
 }
 
@@ -20,13 +21,12 @@ const githubcallback = async(req, res) =>{
 }
 
 const logout = async(req, res) =>{
-        console.log(logout)
-        req.logger.info(`logout del usuario: ${req.user.email}`)
-        req.logout()
-        req.session.destroy()
-        res.redirect('/')
-
+    req.logger.info(`logout del usuario: ${req.session.user.email}`)
+    req.logout(function() {
+            res.redirect('/');
+        })
 }
+
 
 
 
@@ -35,5 +35,4 @@ export default{
     login,
     githubcallback,
     logout
-    
 }

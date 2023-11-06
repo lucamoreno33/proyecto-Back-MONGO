@@ -1,11 +1,18 @@
 import productModel from "../dao/mongo/models/productModel.js";
 import UserDTO from "../dao/DTOs/User.dto.js";
+import userManager from "../dao/mongo/user.mongo.js";
+import cartManager from "../dao/mongo/cart.mongo.js";
+import ticketModel from "../dao/mongo/models/ticketModel.js";
 
+const userController = new userManager()
+const cartController = new cartManager()
 
 const home = async(req, res) =>{
     const { limit, page = 1, sort, query, statusQuery} = req.query;
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest} =
         await productModel.paginate({}, {page, limit: 2, lean: true});
+    req.user = req.session.user
+    const cart = req.session.user.cart[0]
     const products = docs;
     res.render("home", {
             products,
@@ -13,7 +20,8 @@ const home = async(req, res) =>{
             hasPrevPage,
             hasNextPage,
             prevPage,
-            nextPage
+            nextPage,
+            cart
         })
 }
 const current = (req, res) =>{
@@ -30,14 +38,41 @@ const registerRender = (req, res) =>{
 }
 
 const logoutRender = (req, res) => {
-    res.render("logout")
+    const cart = req.session.user.cart[0]
+    res.render("logout", {cart})
 }
 
-const renderUploadForm = (req, res) => {
-    
+const renderUploadForm = async(req, res) => {
+    const cart = req.session.user.cart[0]
     const userId = req.session.user._id;
-    res.render("fileUpload", { userId });
+    res.render("fileUpload", { userId, cart });
 };
+
+const cartRender = async(req, res) =>{
+    const {cid} = req.params
+    const cart = await cartController.getCart(cid).populate("products.product")
+    let total = 0;
+    for (const product of cart.products){
+        total += product.product.price * product.quantity;
+    }
+    const products = cart.products.map(product => product.product)
+    res.render("cart", { products, total, cid })
+}
+
+const ticketRender = async(req, res) =>{
+    const {tc} = req.params;
+    const ticket = await ticketModel.findOne({ code: tc });
+    if (ticket){
+        res.render("ticket", { ticket })
+    }else res.status(404).json("ticket no encontrado/no existente")
+}
+
+const profileRender = async(req, res) =>{
+    const userDTO = new UserDTO(req.session.user);
+    const cart = req.session.user.cart[0]
+    res.render("profile", {userDTO, cart})
+}
+
 
 export default{
     home,
@@ -45,5 +80,8 @@ export default{
     loginRender,
     registerRender,
     logoutRender,
-    renderUploadForm
+    renderUploadForm,
+    cartRender,
+    ticketRender,
+    profileRender
 }

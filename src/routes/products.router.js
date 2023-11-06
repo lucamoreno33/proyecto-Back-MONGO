@@ -6,10 +6,9 @@ const router = Router();
 
 router.get("/", authorization("ADMIN"), productController.getProducts)
 
-router.get("/:Pid", authorization("ADMIN"), productController.getProduct)
+router.get("/:Pid", productController.getProduct)
 
 router.post("/", authorization(["ADMIN", "premium"]), productController.addProduct)
-
 
 router.put("/:Pid",authorization("ADMIN"), productController.updateProduct)
 

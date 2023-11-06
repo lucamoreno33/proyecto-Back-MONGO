@@ -46,6 +46,14 @@ paths:
           description: Producto actualizado con éxito
         "400":
           description: Petición incorrecta
+        "404":
+          description: Producto no encontrado
+        "2": 
+          description: Faltan datos o estan incorrectos
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"
     delete:
       summary: Elimina un producto por su ID
       tags:
@@ -62,6 +70,14 @@ paths:
           description: Producto eliminado con éxito
         "400":
           description: Petición incorrecta
+        "401":
+          description: Se debe ser dueño del producto para borrarlo
+        "3": 
+          description: Error de base de datos 
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"  
   /api/products:
     get:
       summary: Obtiene todos los productos
@@ -102,6 +118,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Product"
+        "3": 
+          description: Error de base de datos 
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"
     post:
       summary: Agrega un nuevo producto
       tags:
@@ -109,7 +131,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          application/json: 
             schema:
               $ref: "#/components/schemas/Product"
       responses:
@@ -121,6 +143,12 @@ paths:
                 $ref: "#/components/schemas/Product"
         "400":
           description: Petición incorrecta
+        "2": 
+          description: Faltan datos o estan incorrectos
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/CustomError"
   /api/products/100:
     get:
       summary: Crea 100 productos de ejemplo
@@ -137,29 +165,53 @@ components:
         title:
           type: string
           description: Título del producto
+          example: "monitor"
         status:
           type: boolean
           description: Estado del producto
+          example: true
         description:
           type: string
           description: Descripción del producto
+          example: "monitor gamer samsung"
         brand:
           type: string
           description: Marca del producto
+          example: Redragon
         price:
           type: number
           description: Precio del producto
+          example: 180000
         thumbnails:
           type: array
           description: URLs de las imágenes del producto
+          example: ["monitor.jpg"]
           items:
             type: string
         code:
           type: string
           description: Código del producto
+          example: 334
         stock:
           type: number
           description: Stock del producto
+          example: 8
         owner:
           type: string
           description: Propietario del producto
+          example: "luca@mail"
+    CustomError:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "CustomError"
+        cause:
+          type: string
+          example: "Error interno del servidor."
+        message:
+          type: string
+          example: "Se ha producido un error personalizado"
+        code:
+          type: integer
+          example: 3

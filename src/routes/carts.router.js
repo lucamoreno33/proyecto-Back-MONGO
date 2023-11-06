@@ -6,11 +6,11 @@ const router = Router();
 
 router.get("/", authorization("ADMIN"),cartController.getCarts)
 
-router.get("/:cid", authorization(["user", "premium", "ADMIN"]), cartController.getCart)
+router.get("/:cid", cartController.getCart)
 
 router.post("/", authorization(["user", "premium", "ADMIN"]), cartController.addCart)
 
-router.post("/:cid/products/:pid", authorization(["user", "premium", "ADMIN"]), cartController.addProductToCart)
+router.put("/:cid/products/:pid", authorization(["user", "premium", "ADMIN"]), cartController.addProductToCart)
 
 router.delete("/:cid", authorization(["user", "premium", "ADMIN"]), cartController.emptyCart)
 
@@ -21,3 +21,6 @@ router.put("/:cid", router.put("/:cid", authorization(["ADMIN"]), cartController
 router.put("/:cid/purchase", authorization(["user", "premium", "ADMIN"]), cartController.purchaseCart)
 
 export default router
+
+
+//, authorization(["user", "premium", "ADMIN"])

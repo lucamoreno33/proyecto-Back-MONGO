@@ -3,20 +3,37 @@ import mongoosePaginate from "mongoose-paginate-v2";
 const productsCollection = "products"
 
 const productSchema = new mongoose.Schema({
-    title: String,
-    status: Boolean,
-    description: String,
+    title: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: Boolean,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
     brand:{
         type: String,
-        index: true
+        index: true,
+        required: true
     },
     price: Number,
-    thumnails: [String],
+    thumnails: {
+        type: [String],
+        required: true
+    },
     code: {
         type: String,
-        unique: true
+        unique: true,
+        required: true
     },
-    stock: Number,
+    stock: {
+        type: Number,
+        required: true 
+    },
     owner: {
         type: String,
         default: "ADMIN"

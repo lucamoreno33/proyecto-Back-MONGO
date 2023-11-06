@@ -1,4 +1,12 @@
 <div>
-    <h1>Hola, {{user.first_name}} {{user.last_name}}</h1>
-    <p>Correo: {{user.email}}</p>
+    <nav class="d-flex justify-content-between bg-dark ">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Inicio</a>
+        </div>
+        <a class="navbar-brand" href="http://localhost:3000/cart/{{cart}}" id="cartLink" name="{{cart}}">carrito</a>
+        <a href="/logout" class="navbar-brand">logout</a>
+    </nav>
+    <h1>Hola, {{userDTO.first_name}} {{userDTO.last_name}}</h1>
+    <p>Correo: {{userDTO.email}}</p>
+    <a href="/uploadFile" class="btn btn-primary"> subir archivos </a>
 </div>

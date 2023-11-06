@@ -25,6 +25,7 @@ const initializePassport = () =>{
                 email,
                 password: createHash(password),
                 role,
+                cart: []
             };
             if (newUser.email === "luca@mail.com"){
                 newUser.role = "ADMIN" 
@@ -46,6 +47,7 @@ const initializePassport = () =>{
                 if(!user) return done(null, false, {message: "email o usuario incorrectos"});
 
                 if(!isValidPassword(user, password)) return done(null, false, {message: "email o usuario incorrectos"});
+
 
                 return done(null, user);    
             } catch (error) {

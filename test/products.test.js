@@ -3,38 +3,19 @@ import supertest from "supertest"
 
 const expect = chai.expect
 
-const agent = supertest.agent(`http://localhost:3000`);
+const requester = supertest(`http://localhost:3000`);
 
 describe('Test de productos', function(){
-    let authAgent; 
-    beforeEach(async function() {
-        // Inicia sesión antes de cada prueba y almacena el agente autenticado
-        const loginResponse = await agent.post("/api/sessions/login").send({
-            email: "luca@mail.com",
-            password: "newpass",
-        });
-        expect(loginResponse.status).to.equal(200);
-        authAgent = agent; // Asigna el agente autenticado
-    });
-    this.afterEach(function () {
-        agent.get("/api/sessions/logout")
-        .end(function (err, res) {
-            if (err) {
-                throw err;
-            }
-        });
-    })
-    
     describe("GET /api/products", function(){
         it('Debe devolver un array con los productos', async function(){
-            const {_body} = await authAgent.get('/api/products')
+            const {_body} = await requester.get('/api/products')
             expect(_body.status).to.equal("ok");
             expect(_body.data).to.be.an('array');
         });
         it("Segun los querys enviados debe filtrar los productos segun lo solicitado", async function(){
             const limit = 2
             const statusQuery = true
-            const {_body} = await authAgent.get(`/api/products?limit=${limit}&statusQuery=${statusQuery}`)
+            const {_body} = await requester.get(`/api/products?limit=${limit}&statusQuery=${statusQuery}`)
             
             expect(_body.data.length).to.be.at.most(limit);
             for (const product of _body.data) {
@@ -45,14 +26,14 @@ describe('Test de productos', function(){
     describe("GET /api/products/:pid", function(){
         it("debe devolver el producto del pid especificado en la ruta", async function(){
             const existingProductId = "64f7bde983ff089e5f522d25"
-            const {_body} = await authAgent.get(`/api/products/${existingProductId}`)
+            const {_body} = await requester.get(`/api/products/${existingProductId}`)
             expect(_body.data._id).to.be.equal(existingProductId)
-            await authAgent.delete(`/api/products/${_body.data._id}`)
+            await requester.delete(`/api/products/${_body.data._id}`)
             
         })
         it("si el producto no existe debe devolver un codigo de error 404 not found", async function(){
             const nonExistentProductId = "64f7bde983ff089e5f522d22"
-            const {statusCode} = await authAgent.get(`/api/products/${nonExistentProductId}`)
+            const {statusCode} = await requester.get(`/api/products/${nonExistentProductId}`)
             expect(statusCode).to.equal(404)
         })
     })
@@ -68,9 +49,9 @@ describe('Test de productos', function(){
                 stock:40, 
                 thumbnails:[]
             }
-            const {_body} = await authAgent.post("/api/products").send(mockProduct)
+            const {_body} = await requester.post("/api/products").send(mockProduct)
             expect(_body.data).to.have.property("_id")
-            await authAgent.delete(`/api/products/${_body.data._id}`)
+            await requester.delete(`/api/products/${_body.data._id}`)
         })
         it("si falta alguna propiedad debe fallar el codigo", async function(){
             const mockProductMissingProps =
@@ -85,7 +66,7 @@ describe('Test de productos', function(){
                     thumbnails: []
                 }
         
-            const _body = await authAgent.post("/api/products").send(mockProductMissingProps)
+            const _body = await requester.post("/api/products").send(mockProductMissingProps)
             expect(_body.status).to.equal(400)
         })
     })
@@ -103,7 +84,7 @@ describe('Test de productos', function(){
                 thumbnails: []
             }
             // Agregar un producto de prueba a la base de datos
-            const response = await authAgent.post("/api/products").send(mockProduct);
+            const response = await requester.post("/api/products").send(mockProduct);
             
             const testProduct = response.body.data;
     
@@ -119,7 +100,7 @@ describe('Test de productos', function(){
                 thumbnails: []
             };
     
-            const {_body} = await authAgent.put(`/api/products/${testProduct.id}`).send(updatedProductData);
+            const {_body} = await requester.put(`/api/products/${testProduct.id}`).send(updatedProductData);
             console.log(_body.data)
             console.log(updatedProductData)
             expect(_body.status).to.equal("ok");
@@ -132,7 +113,7 @@ describe('Test de productos', function(){
             expect(_body.data.stock).to.equal(updatedProductData.stock);
     
             // Eliminar el producto de prueba después de la prueba
-            await authAgent.delete(`/api/products/${testProduct.id}`)
+            await requester.delete(`/api/products/${testProduct.id}`)
         });
         it("si el producto no existe, debe devolver un código de error 404", async function(){
             const nonExistentProductId = "64f7bde983ff089e5f522d22";
@@ -146,7 +127,7 @@ describe('Test de productos', function(){
                 stock: 30,
                 thumbnails: []
             };
-            const {statusCode} = await authAgent
+            const {statusCode} = await requester
                 .put(`/api/products/${nonExistentProductId}`)
                 .send(updatedProductData);
     
@@ -166,7 +147,7 @@ describe('Test de productos', function(){
                 thumbnails: []
             };
     
-            const {statusCode} = await authAgent
+            const {statusCode} = await requester
                 .put(`/api/products/${productIdToUpdate}`)
                 .send(incompleteUpdateData);
     
@@ -187,10 +168,10 @@ describe('Test de productos', function(){
                 thumbnails: []
             }    
 
-            const response = await authAgent.post("/api/products").send(mockProduct);
+            const response = await requester.post("/api/products").send(mockProduct);
             const testProduct = response.body.data;
 
-            const { statusCode } = await authAgent.delete(`/api/products/${testProduct.id}`)
+            const { statusCode } = await requester.delete(`/api/products/${testProduct.id}`)
             expect(statusCode).to.equal(204);
         })
         // it("si se intenta borrar un producto del que no se es owner sin ser admin debe devolver un codigo de error 400", function(){

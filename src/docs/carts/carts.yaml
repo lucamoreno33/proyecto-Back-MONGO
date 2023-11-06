@@ -138,7 +138,7 @@ paths:
           description: Carrito no encontrado
 
   /api/carts/{cid}/products/{pid}:
-    post:
+    put:
       summary: Agrega un producto al carrito
       tags:
         - Carts
@@ -201,27 +201,30 @@ components:
         products:
           type: array
           description: Productos en el carrito
+          example: []
           items:
             type: object
             properties:
               product:
                 type: string
                 description: ID del producto
+                example: "64f7bde983ff089e5f522d2b"
               quantity:
                 type: number
                 description: Cantidad del producto en el carrito
+                example: 3
     CustomError:
       type: object
       properties:
         name:
           type: string
-          example: CustomError
+          example: "CustomError"
         cause:
           type: string
-          example: Error interno del servidor.
+          example: "Error interno del servidor."
         message:
           type: string
-          example: Se ha producido un error personalizado.
+          example: "Se ha producido un error personalizado"
         code:
           type: integer
           example: 3
@@ -243,14 +246,17 @@ components:
         code:
           type: string
           description: Codigo del ticket
+          example: 1231523
         purchase_datetime:
           type: string
           format: date-time
           description: Momento de la compra
+          example: "2023-11-06T15:39:40.867Z"
         amount:
           type: number
           description: Total de la compra
+          example: 123000
         purchaser:
           type: string
-          example: example@example.com
           description: Email del comprador
+          example: "luca@mail.com"

@@ -5,8 +5,16 @@ import upload from "../middlewares/multerUpload.middleware.js";
 
 const router = Router();
 
+router.get("/", authorization("ADMIN"), userController.getUsers)
+
 router.get("/premium/:uid",authorization(["user", "premium"]), userController.changeRole)
 
-router.post("/:uid/documents",authorization(["user", "premium"]), upload.array("file"), userController.uploadDocuments )
+router.post("/:uid/documents",authorization(["user", "premium"]), upload.fields([
+    { name: 'profile', maxCount: 1 },
+    { name: 'product', maxCount: 1 },
+    { name: 'document', maxCount: 1 },]), 
+    userController.uploadDocuments )
+
+router.delete("/", userController.deleteUsers)
 
 export default router

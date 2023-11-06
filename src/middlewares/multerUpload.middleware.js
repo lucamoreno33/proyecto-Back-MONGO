@@ -3,7 +3,7 @@ import multer from "multer";
 const storage = multer.diskStorage({
     
     destination: (req, file, cb) => {
-        const fileType = req.body.fileType;
+        const fileType = file.fieldname
         const uploadFolder = determineUploadFolder(fileType);
         cb(null, uploadFolder);
     },

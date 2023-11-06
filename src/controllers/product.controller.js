@@ -99,12 +99,27 @@ const updateProduct = async(req, res) =>{
 
 const deleteProduct = async(req, res) =>{
     const { Pid } = req.params;
-    req.session.user = req.user
+    req.user = req.session.user
     const product = await productController.getProduct(Pid) 
     if (product.owner === req.user.email || req.user.role === "ADMIN"){
         const result = await productController.deleteProduct(product.id);
         if (result) {
             req.logger.warning("producto borrado de la db")
+            if (req.user.role === "premium"){
+                const mailOptions = {
+                    from: 'hornitodebarro2@gmail.com',
+                    to: req.user.email,
+                    subject: 'Se ha eliminado un producto creado por usted',
+                    html: `<p>producto: ${product}</p>`,
+                };
+            
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.log('Error al enviar el correo', error);
+                    } else {
+                        console.log('Correo enviado con éxito');
+                    }
+            })}
             return res.sendStatus(204);}
 
         CustomErrors.createError({

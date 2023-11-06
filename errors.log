@@ -6,3 +6,57 @@ warning: prueba logger
 warning: prueba logger
 error: pueba logger
 fatal: prueba logger
+warning: se han eliminado los siguientes usuarios innactivos: {
+  _id: new ObjectId("653acea673fbfb19759459f0"),
+  first_name: 'ian',
+  last_name: 'ibaceta',
+  email: 'ian@mail',
+  password: '$2b$10$JK6TNuDN4ebAIScUV5F.zuDu6nyXMhDpPiUX1.kT9ADY78cXbLzVS',
+  role: 'user',
+  documents: [],
+  lastConnection: 2023-10-20T16:00:00.000Z,
+  __v: 0
+}
+warning: se han eliminado los siguientes usuarios innactivos: {
+  _id: new ObjectId("653ace5273fbfb19759459ed"),
+  first_name: 'ivan',
+  last_name: 'romero',
+  email: 'horaciobonafide33@gmail.com',
+  password: '$2b$10$jL8Oe3iUquXdehp4hoNje.C1xsYHhFDtBU3Pknc2wR6HpWzVyQl3y',
+  role: 'user',
+  documents: [],
+  lastConnection: 2023-10-20T16:00:00.000Z,
+  __v: 0
+}
+warning: se han eliminado los siguientes usuarios innactivos: {
+  _id: new ObjectId("653af6a0980ff87441335e46"),
+  first_name: 'ivan',
+  last_name: 'romero',
+  email: 'horaciobonafide33@gmail.com',
+  password: '$2b$10$4Bv.Fma8ZiMYf2uOTKcd/eR5U5P4oOpBehkGQSMlymZpzKfteKEne',
+  role: 'user',
+  documents: [],
+  lastConnection: 2023-10-20T16:00:00.000Z,
+  __v: 0
+},{
+  _id: new ObjectId("653af6b3980ff87441335e49"),
+  first_name: 'ian',
+  last_name: 'beltran',
+  email: 'hornitodebarro2@gmail.com',
+  password: '$2b$10$/jiye1zooduO889ojlL1a.IZ3V//HCKvX97Dbjbfabp4FKPZtN1i.',
+  role: 'user',
+  documents: [],
+  lastConnection: 2023-10-20T16:00:00.000Z,
+  __v: 0
+},{
+  _id: new ObjectId("653af6d6980ff87441335e4c"),
+  first_name: 'luca',
+  last_name: 'test',
+  email: 'luca_moreno2010@hotmail.com',
+  password: '$2b$10$uo4/GxVaVVU/SBZQkfyhFO1lV7jqX57Ht9Hqaj4SNCfpFP0TZmIoa',
+  role: 'user',
+  documents: [],
+  lastConnection: 2023-10-20T16:00:00.000Z,
+  __v: 0
+}
+warning: producto borrado de la db
