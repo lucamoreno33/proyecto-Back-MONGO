@@ -8,7 +8,7 @@ buttons.forEach((button) => {
             cart = "123456789012345678901234"
         }
         const response = await fetch(`/api/carts/${cart}/products/${button.name}`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             }

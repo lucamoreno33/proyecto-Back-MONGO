@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", authorization("ADMIN"),cartController.getCarts)
 
-router.get("/:cid", cartController.getCart)
+router.get("/:cid", authorization(["user", "premium", "ADMIN"]), cartController.getCart)
 
 router.post("/", authorization(["user", "premium", "ADMIN"]), cartController.addCart)
 
@@ -22,5 +22,3 @@ router.put("/:cid/purchase", authorization(["user", "premium", "ADMIN"]), cartCo
 
 export default router
 
-
-//, authorization(["user", "premium", "ADMIN"])
