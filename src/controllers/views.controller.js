@@ -54,13 +54,16 @@ const cartRender = async(req, res) =>{
     const {cid} = req.params
     const cart = await cartController.getCart(cid).populate("products.product")
     let total = 0;
-    let quantitys = [];
     for (const product of cart.products){
         total += product.product.price * product.quantity;
-        quantitys.push(product.quantity)
     }
 
-    const products = cart.products.map(product => product.product)
+    const products = cart.products.map(product => {
+        return {
+            ...product.product.toObject(),
+            quantity: product.quantity
+        }
+    })
 
     res.render("cart", { products, total, cid, quantitys })
 }
