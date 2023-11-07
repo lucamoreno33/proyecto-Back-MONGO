@@ -65,7 +65,7 @@ const cartRender = async(req, res) =>{
         }
     })
 
-    res.render("cart", { products, total, cid, quantitys })
+    res.render("cart", { products, total, cid})
 }
 
 const ticketRender = async(req, res) =>{
