@@ -4,11 +4,9 @@ import productManager from "../dao/mongo/product.mongo.js";
 import { uid } from "uid";
 import CustomErrors from "../utils/errors/Custom.errors.js";
 import EnumErrors from "../utils/errors/Enum.errors.js";
-import userManager from "../dao/mongo/user.mongo.js";
 
 const cartController = new cartManager();
 const productController = new productManager();
-const userController = new userManager()
 
 const getCart = async(req, res) =>{
     const { cid } = req.params;
@@ -62,15 +60,7 @@ const addProductToCart = async(req, res) =>{
     if (!cid || !pid) return res.status(400).json({ status: "error", message: "no data sent!" })
 
     const product = await productController.getProduct(pid)
-    let cart;
-    const cartUser = await userController.getUserByEmail(req.session.user.email)
-    if (cid === "123456789012345678901234" && cartUser.cart.length === 0){
-        cart = await cartController.addCart()
-        cartUser.cart.push(cart.id)
-        await userController.updateUser(cartUser.id, cartUser)
-    }else{
-        cart = await cartController.getCart(cid)
-    }
+    const cart = await cartController.getCart(cid)
     
     if (product.owner === req.user.email){
         return res.status(403).json({ status: "error", message: "no puedes agregar un producto tuyo al carrito" })

@@ -13,9 +13,6 @@ const home = async(req, res) =>{
         await productModel.paginate({}, {page, limit: 2, lean: true});
     req.user = req.session.user
     let cart = req.session.user.cart[0]
-    if (!cart){
-        cart = '123456789012345678901234'
-    }
     const products = docs;
     const url = process.env.URL
     res.render("home", {
