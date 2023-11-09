@@ -1,12 +1,9 @@
 const buttons = document.querySelectorAll('#productsList button');
 const cartLink = document.getElementById("cartLink")
-let cart = document.getElementById("cartLink").name
-        if (cart === ""){
-            cart = "123456789012345678901234"
-        }
 
 buttons.forEach((button) => {
     button.addEventListener('click', async () => {
+        let cart = document.getElementById("cartLink").name
         const response = await fetch(`/api/carts/${cart}/products/${button.name}`, {
             method: "PUT",
             headers: {

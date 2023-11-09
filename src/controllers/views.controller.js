@@ -12,7 +12,10 @@ const home = async(req, res) =>{
     const { docs, hasPrevPage, hasNextPage, prevPage, nextPage, ...rest} =
         await productModel.paginate({}, {page, limit: 2, lean: true});
     req.user = req.session.user
-    const cart = req.session.user.cart[0]
+    let cart = req.session.user.cart[0]
+    if (!cart){
+        cart = '123456789012345678901234'
+    }
     const products = docs;
     const url = process.env.URL
     res.render("home", {
