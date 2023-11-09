@@ -13,6 +13,7 @@ const home = async(req, res) =>{
         await productModel.paginate({}, {page, limit: 2, lean: true});
     req.user = req.session.user
     const user = await userController.getUser(req.session.user.id)
+    console.log(user)
     const cart = user.cart[0]
     const products = docs;
     const url = process.env.URL
