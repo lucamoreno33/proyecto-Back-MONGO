@@ -16,7 +16,7 @@ buttons.forEach((button) => {
         const data = await response.json();
         if (data.cart){
             cartLink.name = data.cart
-            cartLink.href = `https://proyecto-back-mongo-production.up.railway.app/cart/${data.cart}`
+            cartLink.href = cartLink.href +`${data.cart}`
         }
         
     });
