@@ -9,7 +9,7 @@ const registerSuccess = async(req, res) =>{
 }
 
 const login = async(req, res) =>{
-    req.user = req.session.user
+    req.session.user = req.user 
     if (!req.user) 
         return res.status(400).send({ status:"error", error: "contraseña y/o email incorrecto" });
     const user = await userController.getUserByEmail(req.user.email)
