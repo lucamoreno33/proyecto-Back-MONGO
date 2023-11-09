@@ -10,12 +10,6 @@ buttons.forEach((button) => {
                 "Content-Type": "application/json"
             }
         });
-        const data = await response.json();
-        if (data.cart){
-            cartLink.name = data.cart
-            cartLink.href = cartLink.href +`${data.cart}`
-        }
-        
     });
 });
 
